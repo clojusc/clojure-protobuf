@@ -12,17 +12,18 @@
             [conch.core :as sh])
   (:import java.util.zip.ZipFile))
 
-(def version "2.3.0")
-(def cache   (str (leiningen-home) "/cache/lein-protobuf"))
-(def zipfile (format "protobuf-%s.zip" version))
-(def srcdir  (format "%s/protobuf-%s" cache version))
-(def protoc  (format "%s/src/protoc" srcdir))
+(def default-version "2.3.0")
+(defn version
+  [project]
+  (or (:protobuf-version project) "default-version"))
+(defn srcdir [project] (str "protobuf-" (version project)))
+(defn zipfile [project] (format "protobuf-%s.zip" (version project)))
 
 (def ^{:dynamic true} *compile?* true)
 
-(def url
+(defn url [project]
   (java.net.URL.
-   (format "http://protobuf.googlecode.com/files/%s" zipfile)))
+   (format "http://protobuf.googlecode.com/files/protobuf-%s.zip" (version project))))
 
 (defn target [project]
   (doto (io/file (:target-path project))
@@ -66,6 +67,10 @@
   (for [file (rest (file-seq dir)) :when (proto-file? file)]
     (.substring (.getPath file) (inc (count (.getPath dir))))))
 
+(defn installed? [project]
+  (try (.contains (sh/stream-to-string (sh/proc "protoc" "--version") :out) (version project))
+       (catch java.io.IOException e)))
+
 (defn read-pass []
   (print "Password: ")
   (flush)
@@ -74,26 +79,34 @@
 (defn fetch
   "Fetch protocol-buffer source and unzip it."
   [project]
-  (let [srcdir (io/file srcdir)]
-    (when-not (.exists srcdir)
-      (.mkdirs srcdir)
-      (let [zipped (io/file cache zipfile)]
-        (println "Downloading" zipfile)
-        (with-open [stream (.openStream url)]
+  (let [target (target project)]
+    (when-not (.exists (io/file target (srcdir project)))
+      (let [zipped (io/file target (zipfile project))]
+        (println "Downloading" (zipfile project))
+        (with-open [stream (.openStream (url project))]
           (io/copy stream (io/file zipped)))
-        (println "Unzipping" zipfile "to" target)
-        (fs-zip/unzip zipped cache)))))
+        (println "Unzipping" (zipfile project) "to" target)
+        (fs/unzip zipped target)))))
 
-(defn build-protoc
-  "Compile protoc from source."
+(defn uninstall
+  "Remove protoc if it is installed."
   [project]
-  (let [srcdir (io/file srcdir)
-        protoc (io/file protoc)]
-    (when-not (.exists protoc)
-      (fetch project)
-      (when-not (.exists (io/file srcdir "src" "protoc"))
-        (fs/chmod "+x" (io/file srcdir "configure"))
-        (fs/chmod "+x" (io/file srcdir "install-sh"))
+  (when (installed? project)
+    (let [password (read-pass)
+          proc (sh/proc "sudo" "-S" "make" "uninstall"
+                        :dir (io/file (target project) (srcdir project)))]
+      (sh/feed-from-string proc (str password "\n"))
+      (sh/stream-to-out proc :out))))
+
+(defn install
+  "Compile and install protoc to /usr/local."
+  [project]
+  (when-not (installed? project)
+    (fetch project)
+    (let [source (io/file (target project) (srcdir project))]
+      (when-not (.exists (io/file source "src" "protoc"))
+        (fs/chmod "+x" (io/file source "configure"))
+        (fs/chmod "+x" (io/file source "install-sh"))
         (println "Configuring protoc")
         (sh/stream-to-out (sh/proc "./configure" :dir srcdir) :out)
         (println "Running 'make'")
@@ -137,9 +150,9 @@
       (.mkdirs proto-files)
       (io/copy (io/file srcdir "src/google/protobuf/descriptor.proto")
                descriptor)
-      (compile-protobuf project
-                        ["google/protobuf/descriptor.proto"]
-                        out))))
+      (protoc project
+              ["google/protobuf/descriptor.proto"]
+              (io/file target (srcdir project) "java/src/main/java")))))
 
 (defn compile
   "Compile protocol buffer files located in proto dir."
@@ -157,7 +170,13 @@
               (compile (first args)))
             (apply f args)))
 
-(defn protobuf
-  "Task for compiling protobuf libraries."
-  [project & args]
-  (apply compile project args))
+(defn ^{:doc "Tasks for installing and uninstalling protobuf libraries."
+        :help-arglists '([subtask & args])
+        :subtasks [#'install #'uninstall #'compile]}
+  protobuf
+  ([project] (println (help-for "protobuf")))
+  ([project subtask & args]
+     (case subtask
+       "install"   (apply install project args)
+       "uninstall" (apply uninstall project args)
+       "compile"   (apply compile project args))))
