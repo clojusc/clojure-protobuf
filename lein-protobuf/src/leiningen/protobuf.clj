@@ -36,21 +36,18 @@
     (second (re-matches #".*\"(.*)\".*" line))))
 
 (defn extract-dependencies
-  "extract all files proto is dependent on"
-  [proto-path proto-file target]
-  (let [proto-file (io/file proto-path proto-file)]
-    (loop [files (vec (proto-dependencies proto-file))]
-      (when-not (empty? files)
-        (let [proto (peek files)
-              files (pop files)]
-          (if (or (.exists (io/file proto-path proto))
-                  (.exists (io/file target "proto" proto)))
-            (recur files)
-            (let [location (str "proto/" proto)
-                  proto-file (io/file target location)]
-              (.mkdirs (.getParentFile proto-file))
-              (io/copy (io/reader (io/resource location)) proto-file)
-              (recur (into files (proto-dependencies proto-file))))))))))
+  "Extract all files proto depends on into dest."
+  [proto-path proto dest]
+  (loop [deps (proto-dependencies (io/file proto-path proto))]
+    (when-let [[dep & deps] (seq deps)]
+      (let [proto-file (io/file dest dep)]
+        (if (or (.exists (io/file proto-path dep))
+                (.exists proto-file))
+          (recur deps)
+          (do (.mkdirs (.getParentFile proto-file))
+              (io/copy (io/reader (io/resource "proto" proto))
+                       proto-file)
+              (recur (concat deps (proto-dependencies proto-file)))))))))
 
 (defn modtime [dir]
   (let [files (->> dir io/file file-seq rest)]
