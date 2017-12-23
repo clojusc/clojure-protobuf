@@ -27,7 +27,23 @@
     :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
     :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
     :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
-    :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
+    :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+    :docs {
+      :dependencies [
+        [clojang/codox-theme "0.2.0-SNAPSHOT"]]
+      :plugins [
+        [lein-codox "0.10.3"]]
+      :codox {
+        :project {
+          :name "protobuf"
+          :description "A Clojure interface to Google's protocol buffers"}
+        :namespaces [#"^flatland\.protobuf\.(?!dev)"]
+        :metadata {
+          :doc/format :markdown
+          :doc "Documentation forthcoming"}
+        :themes [:clojang]
+        :doc-paths ["resources/docs"]
+        :output-path "docs/current"}}}
   :aliases {
     "protoc-test" [
        "with-profile"
@@ -45,6 +61,10 @@
       "+test"
       "eastwood"
       "{:namespaces [:source-paths] :source-paths [\"src\"]}"]
+    "docs" [
+      "with-profile"
+      "+docs"
+      "codox"]
     "test-all" [
       "with-profile"
       "+1.5:+1.6:+1.7:+1.9:+default"

@@ -7,7 +7,6 @@ build
 pom.xml*
 *.jar
 *.class
-docs
 protobuf-*
 protosrc
 .classpath
