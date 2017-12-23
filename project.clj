@@ -13,6 +13,8 @@
                  [org.flatland/io "0.3.0"]
                  [ordered-collections "0.4.2"]
                  [gloss "0.2.1"]]
+  :plugins [[lein-protobuf "0.5.0"]]
+  :protobuf-version "3.4.0"
   :profiles {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[gloss "0.2.1"]]}}
