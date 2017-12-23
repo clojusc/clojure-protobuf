@@ -1,16 +1,16 @@
 (ns flatland.protobuf.codec
-  (:use flatland.protobuf.core
-        [gloss.core.protocols :only [Reader Writer]]
-        [gloss.core.formats :only [to-buf-seq]]
-        [flatland.useful.fn :only [fix]]
-        [flatland.useful.experimental :only [lift-meta]]
-        [clojure.java.io :only [input-stream]])
-
-  ;; flatland.io extends Seqable so we can concat InputStream from
-  ;; ByteBuffer sequences.
-  (:require flatland.io.core
-            [flatland.schematic.core :as schema]
-            [gloss.core :as gloss]))
+  (:require
+    [clojure.java.io :refer [input-stream]]
+    ;; flatland.io extends Seqable so we can concat InputStream from
+    ;; ByteBuffer sequences.
+    [flatland.io.core]
+    [flatland.protobuf.core :refer :all]
+    [flatland.schematic.core :as schema]
+    [flatland.useful.experimental :refer [lift-meta]]
+    [flatland.useful.fn :refer [fix]]
+    [gloss.core :as gloss]
+    [gloss.core.formats :refer [to-buf-seq]]
+    [gloss.core.protocols :refer [Reader Writer]]))
 
 (declare protobuf-codec)
 
