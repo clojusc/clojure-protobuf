@@ -1,13 +1,22 @@
-clojure-protobuf provides a Clojure interface to Google's [protocol buffers](http://code.google.com/p/protobuf).
-Protocol buffers can be used to communicate with other languages over the network, and they are WAY faster to serialize and deserialize than standard Clojure objects.
+# protobuf
+
+[![Build Status][travis-badge]][travis][![Clojars Project][clojars-badge]][clojars][![Clojure version][clojure-v]](project.clj)
+
+*A Clojure interface to Google's protocol buffers*
+
+This project provides a Clojure interface to Google's
+[protocol buffers](http://code.google.com/p/protobuf). Protocol buffers can be
+used to communicate with other languages over the network, and they are WAY
+faster to serialize and deserialize than standard Clojure objects.
+
 
 ## Getting started
 
 Add the dependency to your project.clj
 
-[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.ghaskins/protobuf.svg)](https://clojars.org/org.clojars.ghaskins/protobuf)
+[![Clojars Project][clojars-badge]][clojars]
 
-Assuming you have the following in `resources/proto/person.proto`:
+Then, given a project with the following in `resources/proto/your/namespace/person.proto`:
 
 ```proto
 message Person {
@@ -18,14 +27,34 @@ message Person {
 }
 ```
 
-Compile the proto using the protobuf compiler and include the resulting .java code in your project
+you can compile the proto using the protobuf compiler and include the resulting
+`.java` code in your project:
 
-    protoc --java_out=./ -proto_dir=resources/proto person.proto
+```shell
+protoc \
+  -I=/usr/include \
+  -I=/usr/local/include \
+  -I=resources/proto \
+  --java_out=$OUT_DIR \
+  resources/proto/your/namespace/*.proto
+```
+
+Note that, at this point, the files are `.java` source files, not `.class`
+files; as such, you will still need to compile them.
+
+We've found a clean way to do this (and how we set up the tests) is to:
+
+* put these `.java` files in an isolated directory
+* add that directory to a `:java-source-paths` entry in the `project.clj`
+* place that in an appropriate `project.clj` profile
+
+
+## Usage
 
 Now you can use the protocol buffer in Clojure:
 
 ```clojure
-(use 'flatland.protobuf.core)
+(require '[flatland.protobuf.core :refer :all])
 (import Example$Person)
 
 (def Person (protodef Example$Person))
@@ -46,6 +75,21 @@ Now you can use the protocol buffer in Clojure:
 => {:id 4, :name "Bob", :email "bob@example.com"}
 ```
 
-A protocol buffer map is immutable just like other clojure objects. It is similar to a
-struct-map, except you cannot insert fields that aren't specified in the `.proto` file.
+A protocol buffer map is immutable just like other clojure objects. It is
+similar to a struct-map, except you cannot insert fields that aren't specified
+in the `.proto` file.
 
+
+<!-- Named page links below: /-->
+
+[travis]: https://travis-ci.org/clojusc/protobuf
+[travis-badge]: https://travis-ci.org/clojusc/protobuf.png?branch=master
+[deps]: http://jarkeeper.com/clojusc/protobuf
+[deps-badge]: http://jarkeeper.com/clojusc/protobuf/status.svg
+[logo]: resources/images/Meson-nonet-spin-0-250x.png
+[logo-large]: resources/images/Meson-nonet-spin-0-1000x.png
+[tag-badge]: https://img.shields.io/github/tag/clojusc/protobuf.svg
+[tag]: https://github.com/clojusc/protobuf/tags
+[clojure-v]: https://img.shields.io/badge/clojure-1.8.0-blue.svg
+[clojars]: https://clojars.org/clojusc/protobuf
+[clojars-badge]: https://img.shields.io/clojars/v/clojusc/protobuf.svg
