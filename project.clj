@@ -1,8 +1,8 @@
-(defproject org.clojars.ghaskins/protobuf "3.4.0-2-SNAPSHOT"
+(defproject clojusc/protobuf "3.4.0-2-SNAPSHOT"
   :description "Clojure-protobuf provides a clojure interface to Google's protocol buffers."
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :url "https://github.com/ghaskins/clojure-protobuf"
+  :url "https://github.com/clojusc/clojure-protobuf"
   :javac-options ["-target" "1.8" "-source" "1.8"]
   :java-source-paths ["src"]
   :lein-release {:deploy-via :clojars}
