@@ -19,8 +19,10 @@
     :test {
       :plugins [[lein-shell "0.5.0"]]
       :java-source-paths ["target/test"]}
-    :1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
-    :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}}
+    :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
+    :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
+    :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+    :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
     "protoc-test" [
        "with-profile"
@@ -29,10 +31,10 @@
        "bin/compile-test-protobufs"]
     "test-all" [
       "with-profile"
-      "+1.3,+1.5,+default"
+      "+1.5:+1.6:+1.7:+1.9:+default"
       "test"]
     "build-test" [
       "do"
-        ["clean"]
-        ["protoc-test"]
-        ["test-all"]]})
+      ["clean"]
+      ["protoc-test"]
+      ["test-all"]]})
