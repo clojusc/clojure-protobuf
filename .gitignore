@@ -1,15 +1,12 @@
-.lein-deps-sum
-.lein-failures
+.lein-*
 .cake
 *~
 lib
 classes
 build
-pom.xml
-pom.xml.asc
+pom.xml*
 *.jar
 *.class
-proto/google/protobuf/descriptor.proto
 docs
 protobuf-*
 protosrc
