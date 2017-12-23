@@ -1,6 +1,6 @@
 # protobuf
 
-[![Build Status][travis-badge]][travis][![Clojars Project][clojars-badge]][clojars][![Clojure version][clojure-v]](project.clj)
+[![Build Status][travis-badge]][travis][![Clojars Project][clojars-badge]][clojars][![Releases][tag-badge]][tag][![Clojure version][clojure-v]](project.clj)
 
 *A Clojure interface to Google's protocol buffers*
 
