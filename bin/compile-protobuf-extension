@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-OUT_DIR=target/test
+OUT_DIR=src
 
 mkdir -p $OUT_DIR
 protoc \
@@ -8,4 +8,4 @@ protoc \
   -I=/usr/local/include \
   -I=resources \
   --java_out=$OUT_DIR \
-  resources/protobuf/test/*.proto
+  resources/protobuf/extensions.proto
