@@ -95,9 +95,9 @@
     "build-test" [
       "do"
       ["clean"]
+      ["ubercompile"]
+      ["clean"]
       ["lint"]
       ["protoc-extension"]
       ["protoc-test"]
-      ;["ubercompile"]
-      ;["clean"]
       ["test-all"]]})
