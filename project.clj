@@ -1,4 +1,4 @@
-(defproject clojusc/protobuf "3.4.0-v0.3-SNAPSHOT"
+(defproject clojusc/protobuf "3.4.0-v0.3"
   :description "A Clojure interface to Google's protocol buffers"
   :url "https://github.com/clojusc/protobuf"
   :license {
@@ -17,8 +17,6 @@
   :java-source-paths ["src"]
   :profiles {
     :test {
-      :dependencies [
-        [clojusc/ltest "0.3.0-SNAPSHOT"]]
       :plugins [
         [jonase/eastwood "0.2.5"]
         [lein-ancient "0.6.15"]
