@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+OUT_DIR=target/test
+
+mkdir -p $OUT_DIR
+protoc \
+  -I=/usr/include \
+  -I=/usr/local/include \
+  -I=resources/proto \
+  --java_out=$OUT_DIR \
+  resources/proto/flatland/protobuf/test/*.proto
