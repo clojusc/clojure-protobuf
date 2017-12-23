@@ -7,25 +7,31 @@
   :exclusions [
     [org.clojure/clojure]]
   :dependencies [
-    [org.clojure/clojure "1.8.0"]
     [com.google.protobuf/protobuf-java "3.5.1"]
-    [org.flatland/useful "0.11.5"]
-    [org.flatland/schematic "0.1.5"]
-    [org.flatland/io "0.3.0"]
+    [gloss "0.2.6"]
     [ordered-collections "0.4.2"]
-    [gloss "0.2.6"]]
+    [org.clojure/clojure "1.8.0"]
+    [org.flatland/io "0.3.0"]
+    [org.flatland/schematic "0.1.5"]
+    [org.flatland/useful "0.11.5"]]
   :java-source-paths ["src"]
   :profiles {
+    :ubercompile {
+      :aot :all}
+    :dev {
+      :source-paths ["dev-resources/src"]}
+    :custom-repl {
+      :repl-options {
+        :init-ns protobuf.dev
+        :prompt ~#(str "\u001B[35m[\u001B[34m"
+                       %
+                       "\u001B[35m]\u001B[33m λ\u001B[m=> ")}}
     :test {
       :plugins [
         [jonase/eastwood "0.2.5"]
         [lein-ancient "0.6.15"]
         [lein-shell "0.5.0"]]
       :java-source-paths ["target/test"]}
-    :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
-    :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
-    :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
-    :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
     :docs {
       :dependencies [
         [clojang/codox-theme "0.2.0-SNAPSHOT"]]
@@ -35,14 +41,21 @@
         :project {
           :name "protobuf"
           :description "A Clojure interface to Google's protocol buffers"}
-        :namespaces [#"^flatland\.protobuf\.(?!dev)"]
+        :namespaces [#"^protobuf\.(?!dev)"]
         :metadata {
           :doc/format :markdown
           :doc "Documentation forthcoming"}
         :themes [:clojang]
         :doc-paths ["resources/docs"]
-        :output-path "docs/current"}}}
+        :output-path "docs/current"}}
+    :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
+    :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
+    :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+    :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
+    "protoc-extension" [
+      "shell"
+      "bin/compile-protobuf-extension"]
     "protoc-test" [
        "with-profile"
        "+test"
@@ -59,6 +72,18 @@
       "+test"
       "eastwood"
       "{:namespaces [:source-paths] :source-paths [\"src\"]}"]
+    "ubercompile" [
+      "with-profile"
+      "+ubercompile"
+      "compile"]
+    "repl" [
+      "with-profile"
+      "+test,+custom-repl"
+      "do"
+      ["clean"]
+      ["protoc-extension"]
+      ["protoc-test"]
+      ["repl"]]
     "docs" [
       "with-profile"
       "+docs"
@@ -71,5 +96,8 @@
       "do"
       ["clean"]
       ["lint"]
+      ["protoc-extension"]
       ["protoc-test"]
+      ;["ubercompile"]
+      ;["clean"]
       ["test-all"]]})

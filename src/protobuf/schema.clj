@@ -1,11 +1,14 @@
-(ns flatland.protobuf.schema
-  (:use [flatland.useful.fn :only [fix]]
-        [clojure.string :only [lower-case]])
-  (:import (flatland.protobuf PersistentProtocolBufferMap
-                              PersistentProtocolBufferMap$Def Extensions)
-           (com.google.protobuf Descriptors$Descriptor
-                                Descriptors$FieldDescriptor
-                                Descriptors$FieldDescriptor$Type)))
+(ns protobuf.schema
+  (:require
+    [clojure.string :refer [lower-case]]
+    [flatland.useful.fn :refer [fix]])
+  (:import
+    (protobuf Extensions
+              PersistentProtocolBufferMap
+              PersistentProtocolBufferMap$Def )
+    (com.google.protobuf Descriptors$Descriptor
+                         Descriptors$FieldDescriptor
+                         Descriptors$FieldDescriptor$Type)))
 
 (defn extension [ext ^Descriptors$FieldDescriptor field]
   (-> (.getOptions field)
@@ -29,7 +32,7 @@
 
 (defmulti field-schema (fn [field def & _] (field-type field)))
 
-(defn struct-schema [^Descriptors$Descriptor          struct
+(defn struct-schema [^Descriptors$Descriptor struct
                      ^PersistentProtocolBufferMap$Def def
                      & [parents]]
   (let [struct-name (.getFullName struct)]

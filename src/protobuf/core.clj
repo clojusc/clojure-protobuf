@@ -1,12 +1,19 @@
-(ns flatland.protobuf.core
-  (:use [flatland.protobuf.schema :only [field-schema]]
-        [flatland.useful.fn :only [fix]]
-        [clojure.java.io :only [input-stream output-stream]])
-  (:require flatland.useful.utils)
-  (:import (flatland.protobuf PersistentProtocolBufferMap PersistentProtocolBufferMap$Def PersistentProtocolBufferMap$Def$NamingStrategy Extensions)
-           (com.google.protobuf GeneratedMessage CodedInputStream Descriptors$Descriptor)
-           (java.io InputStream OutputStream)
-           (clojure.lang Reflector)))
+(ns protobuf.core
+  (:require
+    [clojure.java.io :refer [input-stream output-stream]]
+    [flatland.useful.fn :refer [fix]]
+    [flatland.useful.utils]
+    [protobuf.schema :refer [field-schema]])
+  (:import
+    (clojure.lang Reflector)
+    (com.google.protobuf CodedInputStream
+                         Descriptors$Descriptor
+                         GeneratedMessage)
+    (java.io InputStream OutputStream)
+    (protobuf Extensions
+              PersistentProtocolBufferMap
+              PersistentProtocolBufferMap$Def
+              PersistentProtocolBufferMap$Def$NamingStrategy)))
 
 (defn protobuf?
   "Is the given object a PersistentProtocolBufferMap?"
@@ -69,7 +76,7 @@
       (PersistentProtocolBufferMap/parseFrom type in))))
 
 (defn ^"[B" protobuf-dump
-  "Return the byte representation of the given flatland.protobuf."
+  "Return the byte representation of the given protobuf."
   ([^PersistentProtocolBufferMap p]
      (.toByteArray p))
   ([^PersistentProtocolBufferMap$Def type m]

@@ -1,8 +1,8 @@
-package flatland.protobuf.test.core;
+package protobuf.test.core;
 
-import "flatland/protobuf/extensions.proto";
+import "protobuf/extensions.proto";
 
-option java_package = "flatland.protobuf.test";
+option java_package = "protobuf.test";
 option java_outer_classname = "Core";
 
 message Foo {

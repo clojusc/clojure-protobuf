@@ -1,8 +1,8 @@
-package flatland.protobuf.test.codec;
+package protobuf.test.codec;
 
-import "flatland/protobuf/extensions.proto";
+import "protobuf/extensions.proto";
 
-option java_package = "flatland.protobuf.test";
+option java_package = "protobuf.test";
 option java_outer_classname = "Codec";
 
 message Foo {

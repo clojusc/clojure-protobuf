@@ -1,9 +1,14 @@
-(ns flatland.protobuf.codec-test
-  (:use clojure.test gloss.io flatland.protobuf.codec)
-  (:import (java.nio ByteBuffer)))
+(ns protobuf.codec-test
+  (:require
+    [clojure.test :refer :all]
+    [gloss.io :refer [decode encode]]
+    [protobuf.codec :refer :all])
+  (:import
+    (java.nio ByteBuffer)
+    (protobuf.test.Codec$Foo)))
 
 (deftest protobuf-codec-test
-  (let [codec (protobuf-codec flatland.protobuf.test.Codec$Foo)]
+  (let [codec (protobuf-codec protobuf.test.Codec$Foo)]
     (testing "decode an encoded data structure"
       (let [val {:foo 1 :bar 2}]
         (is (= val (decode codec (encode codec val))))))
@@ -47,8 +52,8 @@
                (decode codec (concat data1 data2 data3))))))))
 
 (deftest repeated-protobufs
-  (let [len   (length-prefix flatland.protobuf.test.Codec$Foo)
-        codec (protobuf-codec flatland.protobuf.test.Codec$Foo :repeated true)]
+  (let [len   (length-prefix protobuf.test.Codec$Foo)
+        codec (protobuf-codec protobuf.test.Codec$Foo :repeated true)]
     (testing "length-prefix"
       (doseq [i [0 10 100 1000 10000 100000 Integer/MAX_VALUE]]
         (is (= i (decode len (encode len i))))))
