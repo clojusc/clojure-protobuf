@@ -9,11 +9,8 @@
   :dependencies [
     [com.google.protobuf/protobuf-java "3.5.1"]
     [gloss "0.2.6"]
-    [ordered-collections "0.4.2"]
     [org.clojure/clojure "1.8.0"]
-    [org.flatland/io "0.3.0"]
-    [org.flatland/schematic "0.1.5"]
-    [org.flatland/useful "0.11.5"]]
+    [org.flatland/io "0.3.0"]]
   :java-source-paths ["src"]
   :profiles {
     :ubercompile {
@@ -54,6 +51,8 @@
     :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
     "protoc-extension" [
+      "with-profile"
+      "+test"
       "shell"
       "bin/compile-protobuf-extension"]
     "protoc-test" [
@@ -92,6 +91,12 @@
       "with-profile"
       "+1.5:+1.6:+1.7:+1.9:+default"
       "test"]
+    "clean-test-all" [
+      "do"
+      ["clean"]
+      ["protoc-extension"]
+      ["protoc-test"]
+      ["test-all"]]
     "build-test" [
       "do"
       ["clean"]
