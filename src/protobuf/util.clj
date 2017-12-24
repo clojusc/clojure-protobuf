@@ -98,7 +98,7 @@
 
 (defprotocol Adjoin
   (adjoin-onto [left right]
-    "Merge two data structures by combining the contents. For maps, merge recursively by
+  "Merge two data structures by combining the contents. For maps, merge recursively by
   adjoining values with the same key. For collections, combine the right and left using
   into or conj. If the left value is a set and the right value is a map, the right value
   is assumed to be an existence map where the value determines whether the key is in the
