@@ -99,8 +99,7 @@
         (cons p (read map-def in))
         (.close in))))))
 
-;; rename to write
-(defn protobuf-write
+(defn write
   "Write the given protobufs to the given output stream, prefixing each with
   its length to delimit them."
   [out & ps]
@@ -149,3 +148,6 @@
 
 (def ^{:doc "Backwards-compatible alias for `read`"}
   protobuf-seq #'read)
+
+(def ^{:doc "Backwards-compatible alias for `write`"}
+  protobuf-write #'write)

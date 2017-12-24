@@ -452,7 +452,7 @@
         foo (protobuf/create Foo :id 1 :label "foo")
         bar (protobuf/create Foo :id 2 :label "bar")
         baz (protobuf/create Foo :id 3 :label "baz")]
-    (protobuf/protobuf-write out foo bar baz)
+    (protobuf/write out foo bar baz)
     (.close out)
     (is (= [{:id 1, :label "foo", :deleted false}
             {:id 2, :label "bar", :deleted false}
