@@ -4,6 +4,8 @@
 
 *A Clojure interface to Google's protocol buffers*
 
+[![][logo]][logo-large]
+
 This project provides a Clojure interface to Google's
 [protocol buffers](http://code.google.com/p/protobuf). Protocol buffers can be
 used to communicate with other languages over the network, and they are WAY
@@ -86,8 +88,8 @@ in the `.proto` file.
 [travis-badge]: https://travis-ci.org/clojusc/protobuf.png?branch=master
 [deps]: http://jarkeeper.com/clojusc/protobuf
 [deps-badge]: http://jarkeeper.com/clojusc/protobuf/status.svg
-[logo]: resources/images/Meson-nonet-spin-0-250x.png
-[logo-large]: resources/images/Meson-nonet-spin-0-1000x.png
+[logo]: ux-resources/images/google-protocol-buffer-small.png
+[logo-large]: ux-resources/images/google-protocol-buffer.png
 [tag-badge]: https://img.shields.io/github/tag/clojusc/protobuf.svg
 [tag]: https://github.com/clojusc/protobuf/tags
 [clojure-v]: https://img.shields.io/badge/clojure-1.8.0-blue.svg
