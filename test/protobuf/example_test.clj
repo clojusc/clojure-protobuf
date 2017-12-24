@@ -5,7 +5,7 @@
   (:import
     (com.google.protobuf ByteString)))
 
-(def Photo (protobuf/protodef protobuf.test.Example$Photo))
+(def Photo (protobuf/mapdef protobuf.test.Example$Photo))
 
 (def data {:id 7, :path "/photos/h2k3j4h9h23", :labels #{"hawaii" "family" "surfing"},
            :attrs {"color space" "RGB", "dimensions" "1632x1224", "alpha" "no"},

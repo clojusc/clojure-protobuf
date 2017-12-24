@@ -25,13 +25,12 @@
   [obj]
   (instance? PersistentProtocolBufferMap$Def obj))
 
-;; rename to mapdef
-(defn ^PersistentProtocolBufferMap$Def protodef
-  "Create a protodef from a string or protobuf class."
+(defn ^PersistentProtocolBufferMap$Def mapdef
+  "Create a protocol buffer map definition from a string or protobuf class."
   ([map-def]
      (if (or (mapdef? map-def) (nil? map-def))
        map-def
-       (protodef map-def {})))
+       (mapdef map-def {})))
   ([map-def opts]
      (when map-def
        (let [{:keys [^PersistentProtocolBufferMap$Def$NamingStrategy naming-strategy
@@ -56,9 +55,9 @@
 
 ;; rename to mapdef->schema
 (defn protobuf-schema
-  "Return the schema for the given protodef."
+  "Return the schema for the given mapdef."
   [& args]
-  (let [^PersistentProtocolBufferMap$Def map-def (apply protodef args)]
+  (let [^PersistentProtocolBufferMap$Def map-def (apply mapdef args)]
     (protobuf-schema/field-schema (.getMessageType map-def) map-def)))
 
 ;; rename to parse; change to multimethod
@@ -128,3 +127,6 @@
 
 (def ^{:doc "Backwards-compatible alias for `mapdef?`"}
   protodef? #'mapdef?)
+
+(def ^{:doc "Backwards-compatible alias for `mapdef`"}
+  protodef #'mapdef)

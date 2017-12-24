@@ -6,13 +6,13 @@
   (:import
     (java.io PipedInputStream PipedOutputStream)))
 
-(def Foo (protobuf/protodef protobuf.test.Core$Foo))
-(def FooUnder (protobuf/protodef protobuf.test.Core$Foo
+(def Foo (protobuf/mapdef protobuf.test.Core$Foo))
+(def FooUnder (protobuf/mapdef protobuf.test.Core$Foo
                         {:naming-strategy protobuf.PersistentProtocolBufferMap$Def/protobufNames}))
-(def Bar (protobuf/protodef protobuf.test.Core$Bar))
-(def Response (protobuf/protodef protobuf.test.Core$Response))
-(def ErrorMsg (protobuf/protodef protobuf.test.Core$ErrorMsg))
-(def Maps (protobuf/protodef protobuf.test.Maps$Struct))
+(def Bar (protobuf/mapdef protobuf.test.Core$Bar))
+(def Response (protobuf/mapdef protobuf.test.Core$Response))
+(def ErrorMsg (protobuf/mapdef protobuf.test.Core$ErrorMsg))
+(def Maps (protobuf/mapdef protobuf.test.Maps$Struct))
 
 (deftest test-conj
   (let [p (protobuf/protobuf Foo :id 5 :tags ["little" "yellow"] :doubles [1.2 3.4 5.6] :floats [0.01 0.02 0.03])]

@@ -16,7 +16,7 @@
 (def ^{:private true} reset-key :codec_reset)
 
 (defn length-prefix [proto]
-  (let [proto (protobuf/protodef proto)
+  (let [proto (protobuf/mapdef proto)
         min   (alength (protobuf/protobuf-dump proto {len-key 0}))
         max   (alength (protobuf/protobuf-dump proto {len-key Integer/MAX_VALUE}))]
     (letfn [(check [test msg]
@@ -32,7 +32,7 @@
                          len-key)))
 
 (defn protobuf-codec [proto & {:keys [validator repeated]}]
-  (let [proto (protobuf/protodef proto)]
+  (let [proto (protobuf/mapdef proto)]
     (-> (reify
           ;; Reader method
           gloss-protocols/Reader
