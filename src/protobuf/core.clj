@@ -58,20 +58,25 @@
   (let [^PersistentProtocolBufferMap$Def map-def (apply mapdef args)]
     (protobuf-schema/field-schema (.getMessageType map-def) map-def)))
 
-;; rename to parse; change to multimethod
-(defn protobuf-load
-  "Load a protobuf of the given map-def from an array of bytes."
-  ([^PersistentProtocolBufferMap$Def map-def ^bytes data]
+(defmulti parse
+  (fn [map-def data & _]
+    (type data)))
+
+(defmethod
+  ^{:doc "Load a protobuf of the given map-def from an array of bytes."}
+  parse (Class/forName "[B")
+  ([^PersistentProtocolBufferMap$Def map-def data]
      (when data
        (PersistentProtocolBufferMap/create map-def data)))
-  ([^PersistentProtocolBufferMap$Def map-def ^bytes data ^Integer offset ^Integer length]
+  ([^PersistentProtocolBufferMap$Def map-def data ^Integer offset ^Integer length]
      (when data
        (let [^CodedInputStream in (CodedInputStream/newInstance data offset length)]
          (PersistentProtocolBufferMap/parseFrom map-def in)))))
 
-(defn protobuf-load-stream
-  "Load a protobuf of the given map-def from an InputStream."
-  [^PersistentProtocolBufferMap$Def map-def ^InputStream stream]
+(defmethod
+  ^{:doc "Load a protobuf of the given map-def from an `InputStream`."}
+  parse InputStream
+  [^PersistentProtocolBufferMap$Def map-def stream]
   (when stream
     (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
       (PersistentProtocolBufferMap/parseFrom map-def in))))
@@ -134,3 +139,9 @@
 
 (def ^{:doc "Backwards-compatible alias for `mapdef`"}
   protobuf-schema #'mapdef->schema)
+
+(def ^{:doc "Backwards-compatible alias for `parse`"}
+  protobuf-load #'parse)
+
+(def ^{:doc "Backwards-compatible alias for `parse`"}
+  protobuf-load-stream #'parse)

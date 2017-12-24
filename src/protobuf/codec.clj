@@ -37,7 +37,7 @@
           ;; Reader method
           gloss-protocols/Reader
           (read-bytes [this buf-seq]
-            [true (protobuf/protobuf-load-stream proto (io/input-stream buf-seq)) nil])
+            [true (protobuf/parse proto (io/input-stream buf-seq)) nil])
           ;; Writer method
           gloss-protocols/Writer
           (sizeof [this] nil)
