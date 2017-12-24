@@ -1,9 +1,8 @@
 (ns protobuf.core
   (:require
-    [clojure.java.io :refer [input-stream output-stream]]
-    [flatland.useful.fn :refer [fix]]
-    [flatland.useful.utils]
-    [protobuf.schema :refer [field-schema]])
+    [clojure.java.io :as io]
+    [protobuf.schema :as protobuf-schema]
+    [protobuf.util :as util])
   (:import
     (clojure.lang Reflector)
     (com.google.protobuf CodedInputStream
@@ -56,7 +55,7 @@
   "Return the schema for the given protodef."
   [& args]
   (let [^PersistentProtocolBufferMap$Def def (apply protodef args)]
-    (field-schema (.getMessageType def) def)))
+    (protobuf-schema/field-schema (.getMessageType def) def)))
 
 (defn protobuf-load
   "Load a protobuf of the given type from an array of bytes."
@@ -87,7 +86,7 @@
   [^PersistentProtocolBufferMap$Def type in]
   (lazy-seq
    (io!
-    (let [^InputStream in (input-stream in)]
+    (let [^InputStream in (io/input-stream in)]
       (if-let [p (PersistentProtocolBufferMap/parseDelimitedFrom type in)]
         (cons p (protobuf-seq type in))
         (.close in))))))
@@ -96,12 +95,12 @@
   "Write the given protobufs to the given output stream, prefixing each with its length to delimit them."
   [out & ps]
   (io!
-   (let [^OutputStream out (output-stream out)]
+   (let [^OutputStream out (io/output-stream out)]
      (doseq [^PersistentProtocolBufferMap p ps]
        (.writeDelimitedTo p out))
      (.flush out))))
 
-(extend-protocol flatland.useful.utils/Adjoin
+(extend-protocol util/Adjoin
   PersistentProtocolBufferMap
   (adjoin-onto [^PersistentProtocolBufferMap this other]
     (.append this other)))

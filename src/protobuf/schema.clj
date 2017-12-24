@@ -1,7 +1,7 @@
 (ns protobuf.schema
   (:require
-    [clojure.string :refer [lower-case]]
-    [flatland.useful.fn :refer [fix]])
+    [clojure.string :as string]
+    [protobuf.util :as util])
   (:import
     (protobuf Extensions
               PersistentProtocolBufferMap
@@ -13,7 +13,7 @@
 (defn extension [ext ^Descriptors$FieldDescriptor field]
   (-> (.getOptions field)
       (.getExtension ext)
-      (fix string? not-empty)))
+      (util/fix string? not-empty)))
 
 (defn field-type [field]
   (condp instance? field
@@ -47,7 +47,7 @@
 (defn basic-schema [^Descriptors$FieldDescriptor     field
                     ^PersistentProtocolBufferMap$Def def
                      & [parents]]
-  (let [java-type   (keyword (lower-case (.name (.getJavaType field))))
+  (let [java-type   (keyword (string/lower-case (.name (.getJavaType field))))
         meta-string (extension (Extensions/meta) field)]
     (merge (case java-type
              :message (struct-schema (.getMessageType field) def parents)
