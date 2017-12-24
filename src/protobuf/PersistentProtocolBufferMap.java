@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import ordered_map.core.OrderedMap;
-import ordered_set.core.OrderedSet;
 import clojure.lang.APersistentMap;
 import clojure.lang.ASeq;
 import clojure.lang.IFn;
@@ -30,15 +28,16 @@ import clojure.lang.IMapEntry;
 import clojure.lang.IObj;
 import clojure.lang.IPersistentCollection;
 import clojure.lang.IPersistentMap;
+import clojure.lang.IPersistentSet;
 import clojure.lang.IPersistentVector;
 import clojure.lang.ISeq;
-import clojure.lang.ITransientMap;
-import clojure.lang.ITransientSet;
 import clojure.lang.Keyword;
 import clojure.lang.MapEntry;
 import clojure.lang.Numbers;
 import clojure.lang.Obj;
 import clojure.lang.PersistentArrayMap;
+import clojure.lang.PersistentTreeMap;
+import clojure.lang.PersistentTreeSet;
 import clojure.lang.PersistentVector;
 import clojure.lang.RT;
 import clojure.lang.SeqIterator;
@@ -408,7 +407,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
         Object map_field_by = def.mapFieldBy(field);
         DescriptorProtos.FieldOptions options = field.getOptions();
         if (map_field_by != null) {
-          ITransientMap map = (ITransientMap)OrderedMap.EMPTY.asTransient();
+          IPersistentMap map = new PersistentTreeMap();
           while (iterator.hasNext()) {
             PersistentProtocolBufferMap v =
               (PersistentProtocolBufferMap)fromProtoValue(field, iterator.next());
@@ -416,7 +415,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
             PersistentProtocolBufferMap existing = (PersistentProtocolBufferMap)map.valAt(k);
             map = map.assoc(k, def.mapValue(field, existing, v));
           }
-          return map.persistent();
+          return map;
         } else if (options.getExtension(Extensions.counter)) {
           Object count = iterator.next();
           while (iterator.hasNext()) {
@@ -430,7 +429,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
           Descriptors.FieldDescriptor key_field = type.findFieldByName("key");
           Descriptors.FieldDescriptor val_field = type.findFieldByName("val");
 
-          ITransientMap map = (ITransientMap)OrderedMap.EMPTY.asTransient();
+          IPersistentMap map = new PersistentTreeMap();
           while (iterator.hasNext()) {
             DynamicMessage message = (DynamicMessage)iterator.next();
             Object k = fromProtoValue(key_field, message.getField(key_field));
@@ -447,20 +446,20 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
               map = map.assoc(k, v);
             }
           }
-          return map.persistent();
+          return map;
         } else if (options.getExtension(Extensions.set)) {
           Descriptors.Descriptor type = field.getMessageType();
           Descriptors.FieldDescriptor item_field = type.findFieldByName("item");
           Descriptors.FieldDescriptor exists_field = type.findFieldByName("exists");
 
-          ITransientSet set = (ITransientSet)OrderedSet.EMPTY.asTransient();
+          IPersistentSet set = (IPersistentSet)PersistentTreeSet.EMPTY;
           while (iterator.hasNext()) {
             DynamicMessage message = (DynamicMessage)iterator.next();
             Object item = fromProtoValue(item_field, message.getField(item_field));
             Boolean exists = (Boolean)message.getField(exists_field);
 
             if (exists) {
-              set = (ITransientSet)set.conj(item);
+              set = (IPersistentSet)set.cons(item);
             } else {
               try {
                 set = set.disjoin(item);
@@ -469,7 +468,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
               }
             }
           }
-          return set.persistent();
+          return set;
         }
       }
       List<Object> list = new ArrayList<Object>(values.size());
