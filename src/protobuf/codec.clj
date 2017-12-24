@@ -15,7 +15,8 @@
 (def ^{:private true} len-key :proto_length)
 (def ^{:private true} reset-key :codec_reset)
 
-(defn length-prefix [proto]
+(defn length-prefix
+  [proto]
   (let [proto (protobuf/mapdef proto)
         min   (alength (protobuf/->bytes proto {len-key 0}))
         max   (alength (protobuf/->bytes proto {len-key Integer/MAX_VALUE}))]
@@ -31,7 +32,8 @@
                          #(hash-map len-key %)
                          len-key)))
 
-(defn protobuf-codec [proto & {:keys [validator repeated]}]
+(defn protobuf-codec
+  [proto & {:keys [validator repeated]}]
   (let [proto (protobuf/mapdef proto)]
     (-> (reify
           ;; Reader method
@@ -53,6 +55,7 @@
              #(gloss/repeated (gloss/finite-frame (length-prefix proto) %)
                               :prefix :none)))))
 
-(defn codec-schema [proto]
+(defn codec-schema
+  [proto]
   (util/dissoc-fields (protobuf/mapdef->schema proto)
                         len-key reset-key))

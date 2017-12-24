@@ -141,7 +141,8 @@
   [a b]
   (combine-onto a b))
 
-(defn catbytes [& args]
+(defn catbytes
+  [& args]
   (let [out-buf (byte-array (loop [len 0, args (seq args)]
                               (if-let [[arg & args] args]
                                 (recur (+ len (alength ^bytes arg)) args)
