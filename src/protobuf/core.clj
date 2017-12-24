@@ -20,84 +20,83 @@
   [obj]
   (instance? PersistentProtocolBufferMap obj))
 
-;; rename to mapdef?
-(defn protodef?
-  "Is the given object a PersistentProtocolBufferMap$Def?"
+(defn mapdef?
+  "Is the given object a `PersistentProtocolBufferMap$Def?`"
   [obj]
   (instance? PersistentProtocolBufferMap$Def obj))
 
 ;; rename to mapdef
 (defn ^PersistentProtocolBufferMap$Def protodef
   "Create a protodef from a string or protobuf class."
-  ([mapdef]
-     (if (or (protodef? mapdef) (nil? mapdef))
-       mapdef
-       (protodef mapdef {})))
-  ([mapdef opts]
-     (when mapdef
+  ([map-def]
+     (if (or (mapdef? map-def) (nil? map-def))
+       map-def
+       (protodef map-def {})))
+  ([map-def opts]
+     (when map-def
        (let [{:keys [^PersistentProtocolBufferMap$Def$NamingStrategy naming-strategy
                      size-limit]
               :or {naming-strategy PersistentProtocolBufferMap$Def/convertUnderscores
                    size-limit 67108864}} opts ;; 64MiB
              ^Descriptors$Descriptor descriptor
-             (if (instance? Descriptors$Descriptor mapdef)
-               mapdef
-               (Reflector/invokeStaticMethod ^Class mapdef "getDescriptor" (to-array nil)))]
+             (if (instance? Descriptors$Descriptor map-def)
+               map-def
+               (Reflector/invokeStaticMethod ^Class map-def "getDescriptor" (to-array nil)))]
          (PersistentProtocolBufferMap$Def/create descriptor naming-strategy size-limit)))))
 
 ;; rename to create
 (defn protobuf
-  "Construct a protobuf of the given mapdef."
-  ([^PersistentProtocolBufferMap$Def mapdef]
-     (PersistentProtocolBufferMap/construct mapdef {}))
-  ([^PersistentProtocolBufferMap$Def mapdef m]
-     (PersistentProtocolBufferMap/construct mapdef m))
-  ([^PersistentProtocolBufferMap$Def mapdef k v & kvs]
-     (PersistentProtocolBufferMap/construct mapdef (apply array-map k v kvs))))
+  "Construct a protobuf of the given map-def."
+  ([^PersistentProtocolBufferMap$Def map-def]
+     (PersistentProtocolBufferMap/construct map-def {}))
+  ([^PersistentProtocolBufferMap$Def map-def m]
+     (PersistentProtocolBufferMap/construct map-def m))
+  ([^PersistentProtocolBufferMap$Def map-def k v & kvs]
+     (PersistentProtocolBufferMap/construct map-def (apply array-map k v kvs))))
 
 ;; rename to mapdef->schema
 (defn protobuf-schema
   "Return the schema for the given protodef."
   [& args]
-  (let [^PersistentProtocolBufferMap$Def mapdef (apply protodef args)]
-    (protobuf-schema/field-schema (.getMessageType mapdef) mapdef)))
+  (let [^PersistentProtocolBufferMap$Def map-def (apply protodef args)]
+    (protobuf-schema/field-schema (.getMessageType map-def) map-def)))
 
 ;; rename to parse; change to multimethod
 (defn protobuf-load
-  "Load a protobuf of the given mapdef from an array of bytes."
-  ([^PersistentProtocolBufferMap$Def mapdef ^bytes data]
+  "Load a protobuf of the given map-def from an array of bytes."
+  ([^PersistentProtocolBufferMap$Def map-def ^bytes data]
      (when data
-       (PersistentProtocolBufferMap/create mapdef data)))
-  ([^PersistentProtocolBufferMap$Def mapdef ^bytes data ^Integer offset ^Integer length]
+       (PersistentProtocolBufferMap/create map-def data)))
+  ([^PersistentProtocolBufferMap$Def map-def ^bytes data ^Integer offset ^Integer length]
      (when data
        (let [^CodedInputStream in (CodedInputStream/newInstance data offset length)]
-         (PersistentProtocolBufferMap/parseFrom mapdef in)))))
+         (PersistentProtocolBufferMap/parseFrom map-def in)))))
 
 (defn protobuf-load-stream
-  "Load a protobuf of the given mapdef from an InputStream."
-  [^PersistentProtocolBufferMap$Def mapdef ^InputStream stream]
+  "Load a protobuf of the given map-def from an InputStream."
+  [^PersistentProtocolBufferMap$Def map-def ^InputStream stream]
   (when stream
     (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
-      (PersistentProtocolBufferMap/parseFrom mapdef in))))
+      (PersistentProtocolBufferMap/parseFrom map-def in))))
 
 ;; rename to ->bytes
 (defn ^"[B" protobuf-dump
   "Return the byte representation of the given protobuf."
   ([^PersistentProtocolBufferMap p]
      (.toByteArray p))
-  ([^PersistentProtocolBufferMap$Def mapdef m]
-     (protobuf-dump (PersistentProtocolBufferMap/construct mapdef m))))
+  ([^PersistentProtocolBufferMap$Def map-def m]
+     (protobuf-dump (PersistentProtocolBufferMap/construct map-def m))))
 
 ;; rename to read
 (defn protobuf-seq
-  "Lazily read a sequence of length-delimited protobufs of the specified mapdef
+  "Lazily read a sequence of length-delimited protobufs of the specified map-def
   from the given input stream."
-  [^PersistentProtocolBufferMap$Def mapdef in]
+  [^PersistentProtocolBufferMap$Def map-def in]
   (lazy-seq
    (io!
     (let [^InputStream in (io/input-stream in)]
-      (if-let [p (PersistentProtocolBufferMap/parseDelimitedFrom mapdef in)]
-        (cons p (protobuf-seq mapdef in))
+      (if-let [p (PersistentProtocolBufferMap/parseDelimitedFrom map-def in)]
+        (cons p (protobuf-seq map-def in))
         (.close in))))))
 
 ;; rename to write
@@ -123,8 +122,9 @@
   (.getValAt p key false))
 
 ;;; Aliases
-(def ^{:doc "Backwards-compatible alias for `util/combine-onto`"}
-  adjoin-onto #'util/combine-onto)
 
 (def ^{:doc "Backwards-compatible alias for `protobuf.core/map?`"}
   protobuf? #'map?)
+
+(def ^{:doc "Backwards-compatible alias for `mapdef?`"}
+  protodef? #'mapdef?)

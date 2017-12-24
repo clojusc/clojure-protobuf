@@ -4,7 +4,8 @@
                   ISeq
                   IPersistentMap
                   IPersistentSet
-                  IPersistentCollection)))
+                  IPersistentCollection))
+  (:refer-clojure :exclude [update]))
 
 (defn as-fn
   "Turn an object into a fn if it is not already, by wrapping it in constantly."
