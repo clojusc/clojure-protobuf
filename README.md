@@ -54,25 +54,25 @@ We've found a clean way to do this (and how we set up the tests) is to:
 Now you can use the protocol buffer in Clojure:
 
 ```clojure
-(require '[flatland.protobuf.core :refer :all])
+(require '[protobuf.core :refer :all])
 (import Example$Person)
 
 (def Person (protodef Example$Person))
 
-(def p (protobuf Person :id 4 :name "Bob" :email "bob@example.com"))
-=> {:id 4, :name "Bob", :email "bob@example.com"}
+(def p (protobuf Person :id 4 :name "Alice" :email "alice@example.com"))
+=> {:id 4, :name "Alice", :email "alice@example.com"}
 
-(assoc p :name "Bill"))
-=> {:id 4, :name "Bill", :email "bob@example.com"}
+(assoc p :name "Alice B. Carol"))
+=> {:id 4, :name "Alice B. Carol", :email "alice@example.com"}
 
 (assoc p :likes ["climbing" "running" "jumping"])
-=> {:id 4, name "Bob", :email "bob@example.com", :likes ["climbing" "running" "jumping"]}
+=> {:id 4, name "Alice", :email "alice@example.com", :likes ["climbing" "running" "jumping"]}
 
 (def b (protobuf-dump p))
 => #<byte[] [B@7cbe41ec>
 
 (protobuf-load Person b)
-=> {:id 4, :name "Bob", :email "bob@example.com"}
+=> {:id 4, :name "Alice", :email "alice@example.com"}
 ```
 
 A protocol buffer map is immutable just like other clojure objects. It is
