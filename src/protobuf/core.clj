@@ -81,13 +81,12 @@
     (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
       (PersistentProtocolBufferMap/parseFrom map-def in))))
 
-;; rename to ->bytes
-(defn ^"[B" protobuf-dump
+(defn ^"[B" ->bytes
   "Return the byte representation of the given protobuf."
   ([^PersistentProtocolBufferMap p]
      (.toByteArray p))
   ([^PersistentProtocolBufferMap$Def map-def m]
-     (protobuf-dump (PersistentProtocolBufferMap/construct map-def m))))
+     (->bytes (PersistentProtocolBufferMap/construct map-def m))))
 
 ;; rename to read
 (defn protobuf-seq
@@ -145,3 +144,6 @@
 
 (def ^{:doc "Backwards-compatible alias for `parse`"}
   protobuf-load-stream #'parse)
+
+(def ^{:doc "Backwards-compatible alias for `->bytes`"}
+  protobuf-dump #'->bytes)

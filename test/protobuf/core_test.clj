@@ -128,7 +128,7 @@
 
     ;; TODO add test back once we re-enable this check
     (comment
-      (is (thrown? Exception (protobuf/protobuf-dump p))
+      (is (thrown? Exception (protobuf/->bytes p))
           "Should refuse to serialize with stuff in extmap"))))
 
 (deftest test-string-keys
@@ -149,8 +149,8 @@
                     :tags ["savory"] :tag-set {"bar" false "foo" false "bap" true}
                     :things {"first" {:marked true}})
         r (protobuf/create Foo :label "bad")
-        s (protobuf/parse Foo (util/catbytes (protobuf/protobuf-dump p) (protobuf/protobuf-dump q)))
-        t (protobuf/parse Foo (util/catbytes (protobuf/protobuf-dump p) (protobuf/protobuf-dump r)))]
+        s (protobuf/parse Foo (util/catbytes (protobuf/->bytes p) (protobuf/->bytes q)))
+        t (protobuf/parse Foo (util/catbytes (protobuf/->bytes p) (protobuf/->bytes r)))]
     (is (= 43 (s :id))) ; make sure an explicit default overwrites on append
     (is (= 5  (t :id))) ; make sure a missing default doesn't overwrite on append
     (is (= "rad" (s :label)))
@@ -201,7 +201,7 @@
                                     "G" {:bar 7}
                                     "H" {:bar 8 :exists true}
                                     "I" {:bar 9 :exists false}})
-          r (protobuf/parse Maps (util/catbytes (protobuf/protobuf-dump p) (protobuf/protobuf-dump q)))]
+          r (protobuf/parse Maps (util/catbytes (protobuf/->bytes p) (protobuf/->bytes q)))]
       (are [key vals] (= vals (map (get-in r [map-key key])
                                    [:foo :bar :exists]))
            "A" [1   1 nil  ]
@@ -234,7 +234,7 @@
                                     "G" {:bar 7}
                                     "H" {:bar 8 :deleted true}
                                     "I" {:bar 9 :deleted false}})
-          r (protobuf/parse Maps (util/catbytes (protobuf/protobuf-dump p) (protobuf/protobuf-dump q)))]
+          r (protobuf/parse Maps (util/catbytes (protobuf/->bytes p) (protobuf/->bytes q)))]
       (are [key vals] (= vals (map (get-in r [map-key key])
                                    [:foo :bar :deleted]))
            "A" [1   1 nil  ]

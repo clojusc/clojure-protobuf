@@ -17,8 +17,8 @@
 
 (defn length-prefix [proto]
   (let [proto (protobuf/mapdef proto)
-        min   (alength (protobuf/protobuf-dump proto {len-key 0}))
-        max   (alength (protobuf/protobuf-dump proto {len-key Integer/MAX_VALUE}))]
+        min   (alength (protobuf/->bytes proto {len-key 0}))
+        max   (alength (protobuf/->bytes proto {len-key Integer/MAX_VALUE}))]
     (letfn [(check [test msg]
               (when-not test
                 (throw (Exception. (format "In %s: %s %s"
@@ -45,7 +45,7 @@
             (when (and validator (not (validator val)))
               (throw (IllegalStateException. "Invalid value in protobuf-codec")))
             (gloss-formats/to-buf-seq
-             (protobuf/protobuf-dump
+             (protobuf/->bytes
               (if (protobuf/map? val)
                 val
                 (protobuf/create proto val))))))
