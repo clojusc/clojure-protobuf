@@ -6,11 +6,12 @@
     [flatland.io.core]
     [gloss.core :as gloss]
     [gloss.core.formats :as gloss-formats]
+    [gloss.io :as gloss-io]
     [gloss.core.protocols :as gloss-protocols]
     [protobuf.core :as protobuf]
     [protobuf.util :as util]))
 
-(declare protobuf-codec)
+(declare create)
 
 (def ^{:private true} len-key :proto_length)
 (def ^{:private true} reset-key :codec_reset)
@@ -28,11 +29,11 @@
              "field is required for repeated protobufs")
       (check (= min max)
              "must be of type fixed32 or fixed64"))
-    (gloss/compile-frame (gloss/finite-frame max (protobuf-codec proto))
+    (gloss/compile-frame (gloss/finite-frame max (create proto))
                          #(hash-map len-key %)
                          len-key)))
 
-(defn protobuf-codec
+(defn create
   [proto & {:keys [validator repeated]}]
   (let [proto (protobuf/mapdef proto)]
     (-> (reify
@@ -45,17 +46,32 @@
           (sizeof [this] nil)
           (write-bytes [this _ val]
             (when (and validator (not (validator val)))
-              (throw (IllegalStateException. "Invalid value in protobuf-codec")))
+              (throw (IllegalStateException. "Invalid value in #'protobuf.codec/create")))
             (gloss-formats/to-buf-seq
              (protobuf/->bytes
               (if (protobuf/map? val)
                 val
                 (protobuf/create proto val))))))
-        (util/fix repeated
-             #(gloss/repeated (gloss/finite-frame (length-prefix proto) %)
-                              :prefix :none)))))
+        (util/fix
+          repeated
+          #(gloss/repeated (gloss/finite-frame (length-prefix proto) %)
+                           :prefix :none)))))
 
+;;; Aliases
+
+(def ^{:doc "Backwards-compatible alias for `create`"
+       :deprecated "3.5.1-v1.0"}
+  protobuf-codec #'create)
+
+(def ^{:doc "Encoder for a codec."}
+  encode #'gloss-io/encode)
+
+(def ^{:doc "Decoder for a codec."}
+  decode #'gloss-io/decode)
+
+;; XXX what is this used for? Delete, if not used; add docstring if it is
 (defn codec-schema
   [proto]
   (util/dissoc-fields (protobuf/mapdef->schema proto)
-                        len-key reset-key))
+                      len-key
+                      reset-key))
