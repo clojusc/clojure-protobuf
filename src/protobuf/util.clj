@@ -11,6 +11,14 @@
   [x]
   (if (ifn? x) x, (constantly x)))
 
+(defn into-set
+  "Update the given set using an existence map."
+  [set map]
+  (if (map? map)
+    (reduce (fn [set [k v]] ((if v conj disj) set k))
+            set map)
+    (into set map)))
+
 (defn fix
   "Walk through clauses, a series of predicate/transform pairs. The
   first predicate that x satisfies has its transformation clause
