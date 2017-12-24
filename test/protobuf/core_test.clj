@@ -446,7 +446,7 @@
   (let [p (protobuf/create Response :ok true :error (protobuf/create ErrorMsg :code -10 :data nil))]
     (is (:ok p))))
 
-(deftest test-protobuf-seq-and-write-protobuf
+(deftest test-read-and-write
   (let [in  (PipedInputStream.)
         out (PipedOutputStream. in)
         foo (protobuf/create Foo :id 1 :label "foo")
@@ -457,7 +457,7 @@
     (is (= [{:id 1, :label "foo", :deleted false}
             {:id 2, :label "bar", :deleted false}
             {:id 3, :label "baz", :deleted false}]
-           (protobuf/protobuf-seq Foo in)))))
+           (protobuf/read Foo in)))))
 
 (deftest test-encoding-errors
   (is (thrown-with-msg? IllegalArgumentException #"error setting string field protobuf.test.core.Foo.label to 8"

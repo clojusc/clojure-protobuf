@@ -13,7 +13,7 @@
               PersistentProtocolBufferMap
               PersistentProtocolBufferMap$Def
               PersistentProtocolBufferMap$Def$NamingStrategy))
-  (:refer-clojure :exclude [map?]))
+  (:refer-clojure :exclude [map? read]))
 
 (defn map?
   "Is the given object a `PersistentProtocolBufferMap?`"
@@ -88,8 +88,7 @@
   ([^PersistentProtocolBufferMap$Def map-def m]
      (->bytes (PersistentProtocolBufferMap/construct map-def m))))
 
-;; rename to read
-(defn protobuf-seq
+(defn read
   "Lazily read a sequence of length-delimited protobufs of the specified map-def
   from the given input stream."
   [^PersistentProtocolBufferMap$Def map-def in]
@@ -97,7 +96,7 @@
    (io!
     (let [^InputStream in (io/input-stream in)]
       (if-let [p (PersistentProtocolBufferMap/parseDelimitedFrom map-def in)]
-        (cons p (protobuf-seq map-def in))
+        (cons p (read map-def in))
         (.close in))))))
 
 ;; rename to write
@@ -147,3 +146,6 @@
 
 (def ^{:doc "Backwards-compatible alias for `->bytes`"}
   protobuf-dump #'->bytes)
+
+(def ^{:doc "Backwards-compatible alias for `read`"}
+  protobuf-seq #'read)
