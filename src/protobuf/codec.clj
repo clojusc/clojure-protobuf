@@ -46,7 +46,7 @@
               (throw (IllegalStateException. "Invalid value in protobuf-codec")))
             (gloss-formats/to-buf-seq
              (protobuf/protobuf-dump
-              (if (protobuf/protobuf? val)
+              (if (protobuf/map? val)
                 val
                 (protobuf/protobuf proto val))))))
         (util/fix repeated

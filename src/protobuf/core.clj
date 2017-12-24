@@ -12,13 +12,11 @@
     (protobuf Extensions
               PersistentProtocolBufferMap
               PersistentProtocolBufferMap$Def
-              PersistentProtocolBufferMap$Def$NamingStrategy)))
+              PersistentProtocolBufferMap$Def$NamingStrategy))
+  (:refer-clojure :exclude [map?]))
 
-;;; XXX Create aliases with def docstrings for all the renames below!
-
-;; rename to map?
-(defn protobuf?
-  "Is the given object a PersistentProtocolBufferMap?"
+(defn map?
+  "Is the given object a `PersistentProtocolBufferMap?`"
   [obj]
   (instance? PersistentProtocolBufferMap obj))
 
@@ -127,3 +125,6 @@
 ;;; Aliases
 (def ^{:doc "Backwards-compatible alias for `util/combine-onto`"}
   adjoin-onto #'util/combine-onto)
+
+(def ^{:doc "Backwards-compatible alias for `protobuf.core/map?`"}
+  protobuf? #'map?)
