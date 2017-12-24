@@ -13,4 +13,4 @@
            :image (ByteString/copyFrom (byte-array (map unchecked-byte [1 2 3 4 -1])))})
 
 (deftest example-test
-  (is (= data (apply protobuf/protobuf Photo (apply concat data)))))
+  (is (= data (apply protobuf/create Photo (apply concat data)))))

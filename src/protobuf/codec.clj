@@ -48,7 +48,7 @@
              (protobuf/protobuf-dump
               (if (protobuf/map? val)
                 val
-                (protobuf/protobuf proto val))))))
+                (protobuf/create proto val))))))
         (util/fix repeated
              #(gloss/repeated (gloss/finite-frame (length-prefix proto) %)
                               :prefix :none)))))

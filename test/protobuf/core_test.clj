@@ -15,7 +15,7 @@
 (def Maps (protobuf/mapdef protobuf.test.Maps$Struct))
 
 (deftest test-conj
-  (let [p (protobuf/protobuf Foo :id 5 :tags ["little" "yellow"] :doubles [1.2 3.4 5.6] :floats [0.01 0.02 0.03])]
+  (let [p (protobuf/create Foo :id 5 :tags ["little" "yellow"] :doubles [1.2 3.4 5.6] :floats [0.01 0.02 0.03])]
     (let [p (conj p {:label "bar"})]
       (is (= 5     (:id p)))
       (is (= "bar" (:label p)))
@@ -29,7 +29,7 @@
       (is (= "very" (:label p))))))
 
 (deftest test-combine
-  (let [p (protobuf/protobuf Foo :id 5 :tags ["little" "yellow"] :doubles [1.2] :floats [0.01])]
+  (let [p (protobuf/create Foo :id 5 :tags ["little" "yellow"] :doubles [1.2] :floats [0.01])]
     (let [p (util/combine p {:label "bar"})]
       (is (= 5     (:id p)))
       (is (= "bar" (:label p)))
@@ -46,15 +46,15 @@
       (is (= [1.2 3.4] (:doubles p)))
       (is (= [(float 0.01) (float 0.02)] (:floats  p)))))
   (testing "combining works with set extension"
-    (let [p (protobuf/protobuf Foo :tag-set #{"foo" "bar" "baz"})
-          q (protobuf/protobuf Foo :tag-set {"bar" false "foo" false "bap" true})
+    (let [p (protobuf/create Foo :tag-set #{"foo" "bar" "baz"})
+          q (protobuf/create Foo :tag-set {"bar" false "foo" false "bap" true})
           r (util/combine p q)]
       (is (= #{"foo" "bar" "baz"} (p :tag-set)))
       (is (= #{"bap"}             (q :tag-set)))
       (is (= #{"bap" "baz"}       (r :tag-set)))))
   (testing "combining works with counters"
-    (let [p (protobuf/protobuf Foo :counts {"foo" {:i 5 :d  5.0}})
-          q (protobuf/protobuf Foo :counts {"foo" {:i 8 :d -3.0}})
+    (let [p (protobuf/create Foo :counts {"foo" {:i 5 :d  5.0}})
+          q (protobuf/create Foo :counts {"foo" {:i 8 :d -3.0}})
           r (util/combine p q)]
       (is (=  5   (get-in p [:counts "foo" :i])))
       (is (=  5.0 (get-in p [:counts "foo" :d])))
@@ -69,11 +69,11 @@
     (= (seq inputs)
        (seq (reduce (fn [m [k v]]
                       (util/combine m {:attr_map {k v}}))
-                    (protobuf/protobuf Foo)
+                    (protobuf/create Foo)
                     inputs)))))
 
 (deftest test-assoc
-  (let [p (protobuf/protobuf Foo :id 5 :tags ["little" "yellow"] :foo-by-id {1 {:label "one"} 2 {:label "two"}})]
+  (let [p (protobuf/create Foo :id 5 :tags ["little" "yellow"] :foo-by-id {1 {:label "one"} 2 {:label "two"}})]
     (let [p (assoc p :label "baz" :tags ["nuprin"])]
       (is (= ["nuprin"] (:tags p)))
       (is (= "baz"      (:label p))))
@@ -87,21 +87,21 @@
              (:foo-by-id p))))))
 
 (deftest test-dissoc
-  (let [p (protobuf/protobuf Foo :id 5 :tags ["fast" "shiny"] :label "nice")]
+  (let [p (protobuf/create Foo :id 5 :tags ["fast" "shiny"] :label "nice")]
     (let [p (dissoc p :label :tags)]
       (is (= nil (:tags p)))
       (is (= nil (:label p))))))
 
 (deftest test-equality
   (let [m {:id 5 :tags ["fast" "shiny"] :label "nice" :deleted false}
-        p (protobuf/protobuf Foo :id 5 :tags ["fast" "shiny"] :label "nice")
-        q (protobuf/protobuf Foo :id 5 :tags ["fast" "shiny"] :label "nice")]
+        p (protobuf/create Foo :id 5 :tags ["fast" "shiny"] :label "nice")
+        q (protobuf/create Foo :id 5 :tags ["fast" "shiny"] :label "nice")]
     (is (= m p))
     (is (= p m))
     (is (= q p))))
 
 (deftest test-meta
-  (let [p (protobuf/protobuf Foo :id 5 :tags ["fast" "shiny"] :label "nice")
+  (let [p (protobuf/create Foo :id 5 :tags ["fast" "shiny"] :label "nice")
         m {:foo :bar}
         q (with-meta p m)]
     (is (empty? (meta p)))
@@ -109,7 +109,7 @@
     (is (= m (meta q)))))
 
 (deftest test-extmap
-  (let [p (protobuf/protobuf Foo :id 5 :tags ["fast" "shiny"] :label "nice")
+  (let [p (protobuf/create Foo :id 5 :tags ["fast" "shiny"] :label "nice")
         m {:id 5 :tags ["fast" "shiny"] :label "nice" :deleted false}
         p2 (assoc p :some-key 10)
         m2 (assoc m :some-key 10)]
@@ -120,7 +120,7 @@
     (is (= (set (keys m2)) (set (keys p2)))))
 
   (let [m {:id 5 :wat 10}
-        p (protobuf/protobuf Foo m)]
+        p (protobuf/create Foo m)]
     (testing "protobuf function uses extmap"
       (is (= (:wat m) (:wat p)))
       (let [p (conj p {:stuff 15})]
@@ -132,7 +132,7 @@
           "Should refuse to serialize with stuff in extmap"))))
 
 (deftest test-string-keys
-  (let [p (protobuf/protobuf Foo "id" 5 "label" "rad")]
+  (let [p (protobuf/create Foo "id" 5 "label" "rad")]
     (is (= 5 (p :id)))
     (is (= 5 (p "id")))
     (is (= "rad" (p :label)))
@@ -142,13 +142,13 @@
       (is (= ["check" "it" "out"] (p "tags"))))))
 
 (deftest test-append-bytes
-  (let [p (protobuf/protobuf Foo :id 5 :label "rad" :deleted true
+  (let [p (protobuf/create Foo :id 5 :label "rad" :deleted true
                     :tags ["sweet"] :tag-set #{"foo" "bar" "baz"}
                     :things {"first" {:marked false} "second" {:marked false}})
-        q (protobuf/protobuf Foo :id 43 :deleted false
+        q (protobuf/create Foo :id 43 :deleted false
                     :tags ["savory"] :tag-set {"bar" false "foo" false "bap" true}
                     :things {"first" {:marked true}})
-        r (protobuf/protobuf Foo :label "bad")
+        r (protobuf/create Foo :label "bad")
         s (protobuf/protobuf-load Foo (util/catbytes (protobuf/protobuf-dump p) (protobuf/protobuf-dump q)))
         t (protobuf/protobuf-load Foo (util/catbytes (protobuf/protobuf-dump p) (protobuf/protobuf-dump r)))]
     (is (= 43 (s :id))) ; make sure an explicit default overwrites on append
@@ -164,11 +164,11 @@
     (is (= false (r :deleted)))))
 
 (deftest test-manual-append
-  (let [p (protobuf/protobuf Foo :id 5 :label "rad" :deleted true
+  (let [p (protobuf/create Foo :id 5 :label "rad" :deleted true
                     :tags ["sweet"] :tag-set #{"foo" "bar" "baz"})
-        q (protobuf/protobuf Foo :id 43 :deleted false
+        q (protobuf/create Foo :id 43 :deleted false
                     :tags ["savory"] :tag-set {"bar" false "foo" false "bap" true})
-        r (protobuf/protobuf Foo :label "bad")
+        r (protobuf/create Foo :label "bad")
         s (.append p q)
         t (.append p r)]
     (is (= 43 (s :id))) ; make sure an explicit default overwrites on append
@@ -183,7 +183,7 @@
 
 (deftest test-map-exists
   (doseq [map-key [:element-map-e :element-by-id-e]]
-    (let [p (protobuf/protobuf Maps map-key {"A" {:foo 1}
+    (let [p (protobuf/create Maps map-key {"A" {:foo 1}
                                     "B" {:foo 2}
                                     "C" {:foo 3}
                                     "D" {:foo 4 :exists true}
@@ -192,7 +192,7 @@
                                     "G" {:foo 7 :exists false}
                                     "H" {:foo 8 :exists false}
                                     "I" {:foo 9 :exists false}})
-          q (protobuf/protobuf Maps map-key {"A" {:bar 1}
+          q (protobuf/create Maps map-key {"A" {:bar 1}
                                     "B" {:bar 2 :exists true}
                                     "C" {:bar 3 :exists false}
                                     "D" {:bar 4}
@@ -216,7 +216,7 @@
 
 (deftest test-map-deleted
   (doseq [map-key [:element-map-d :element-by-id-d]]
-    (let [p (protobuf/protobuf Maps map-key {"A" {:foo 1}
+    (let [p (protobuf/create Maps map-key {"A" {:foo 1}
                                     "B" {:foo 2}
                                     "C" {:foo 3}
                                     "D" {:foo 4 :deleted true}
@@ -225,7 +225,7 @@
                                     "G" {:foo 7 :deleted false}
                                     "H" {:foo 8 :deleted false}
                                     "I" {:foo 9 :deleted false}})
-          q (protobuf/protobuf Maps map-key {"A" {:bar 1}
+          q (protobuf/create Maps map-key {"A" {:bar 1}
                                     "B" {:bar 2 :deleted true}
                                     "C" {:bar 3 :deleted false}
                                     "D" {:bar 4}
@@ -248,21 +248,21 @@
            "I" [9   9 false]))))
 
 (deftest test-coercing
-  (let [p (protobuf/protobuf Foo :lat 5 :long 6)]
+  (let [p (protobuf/create Foo :lat 5 :long 6)]
     (is (= 5.0 (p :lat)))
     (is (= 6.0 (p :long))))
-  (let [p (protobuf/protobuf Foo :lat (float 5.0) :long (double 6.0))]
+  (let [p (protobuf/create Foo :lat (float 5.0) :long (double 6.0))]
     (is (= 5.0 (p :lat)))
     (is (= 6.0 (p :long)))))
 
 (deftest test-create
-  (let [p (protobuf/protobuf Foo :id 5 :tag-set #{"little" "yellow"} :attr-map {"size" "little", "color" "yellow", "style" "different"})]
+  (let [p (protobuf/create Foo :id 5 :tag-set #{"little" "yellow"} :attr-map {"size" "little", "color" "yellow", "style" "different"})]
     (is (= #{"little" "yellow"} (:tag-set p)))
     (is (associative? (:attr-map p)))
     (is (= "different" (get-in p [:attr-map "style"])))
     (is (= "little"    (get-in p [:attr-map "size" ])))
     (is (= "yellow"    (get-in p [:attr-map "color"]))))
-  (let [p (protobuf/protobuf Foo :id 1 :foo-by-id {5 {:label "five"}, 6 {:label "six"}})]
+  (let [p (protobuf/create Foo :id 1 :foo-by-id {5 {:label "five"}, 6 {:label "six"}})]
     (let [five ((p :foo-by-id) 5)
           six  ((p :foo-by-id) 6)]
       (is (= 5      (five :id)))
@@ -271,27 +271,27 @@
       (is (= "six"  (six  :label))))))
 
 (deftest test-map-by-with-required-field
-  (let [p (protobuf/protobuf Foo :id 1 :item-map {"foo" {:exists true} "bar" {:exists false}})]
+  (let [p (protobuf/create Foo :id 1 :item-map {"foo" {:exists true} "bar" {:exists false}})]
     (is (= "foo" (get-in p [:item-map "foo" :item])))
     (is (= "bar" (get-in p [:item-map "bar" :item])))))
 
 (deftest test-map-by-with-inconsistent-keys
-  (let [p (protobuf/protobuf Foo :pair-map {"foo" {"key" "bar" "val" "hmm"}})]
+  (let [p (protobuf/create Foo :pair-map {"foo" {"key" "bar" "val" "hmm"}})]
     (is (= "hmm" (get-in p [:pair-map "foo" :val])))
     (is (= nil   (get-in p [:pair-map "bar" :val]))))
-  (let [p (protobuf/protobuf Foo :pair-map {"foo" {:key "bar" :val "hmm"}})]
+  (let [p (protobuf/create Foo :pair-map {"foo" {:key "bar" :val "hmm"}})]
     (is (= "hmm" (get-in p [:pair-map "foo" :val])))
     (is (= nil   (get-in p [:pair-map "bar" :val])))))
 
 (deftest test-conj
-  (let [p (protobuf/protobuf Foo :id 1 :foo-by-id {5 {:label "five", :tag-set ["odd"]}, 6 {:label "six" :tags ["even"]}})]
+  (let [p (protobuf/create Foo :id 1 :foo-by-id {5 {:label "five", :tag-set ["odd"]}, 6 {:label "six" :tags ["even"]}})]
     (let [p (conj p {:foo-by-id {5 {:tag-set ["prime" "odd"]} 6 {:tags ["odd"]}}})]
       (is (= #{"prime" "odd"} (get-in p [:foo-by-id 5 :tag-set])))
       (is (= ["odd"]          (get-in p [:foo-by-id 6 :tags])))
       (is (= nil              (get-in p [:foo-by-id 6 :label]))))))
 
 (deftest test-nested-counters
-  (let [p (protobuf/protobuf Foo :counts {"foo" {:i 5 :d 5.0}})]
+  (let [p (protobuf/create Foo :counts {"foo" {:i 5 :d 5.0}})]
     (is (= 5   (get-in p [:counts "foo" :i])))
     (is (= 5.0 (get-in p [:counts "foo" :d])))
     (let [p (util/combine p {:counts {"foo" {:i 2 :d -2.4} "bar" {:i 99}}})]
@@ -310,7 +310,7 @@
                (protobuf/get-raw p :counts)))))))
 
 (deftest test-succession
-  (let [p (protobuf/protobuf Foo :time {:year 1978 :month 11 :day 24})]
+  (let [p (protobuf/create Foo :time {:year 1978 :month 11 :day 24})]
     (is (= 1978 (get-in p [:time :year])))
     (is (= 11   (get-in p [:time :month])))
     (is (= 24   (get-in p [:time :day])))
@@ -322,7 +322,7 @@
              (protobuf/get-raw p :time))))))
 
 (deftest test-nullable
-  (let [p (protobuf/protobuf Bar :int 1 :long 330000000000 :flt 1.23 :dbl 9.87654321 :str "foo" :enu :a)
+  (let [p (protobuf/create Bar :int 1 :long 330000000000 :flt 1.23 :dbl 9.87654321 :str "foo" :enu :a)
         keyset #{:int :long :flt :dbl :str :enu}]
     (is (= 1            (get p :int)))
     (is (= 330000000000 (get p :long)))
@@ -340,13 +340,13 @@
       (is (= nil (get p :enu)))
       (is (= keyset (set (keys p)))))
     (testing "nullable successions"
-      (let [p (protobuf/protobuf Bar :label "foo")]
+      (let [p (protobuf/create Bar :label "foo")]
         (is (= "foo" (get p :label)))
         (let [p (util/combine p {:label nil})]
           (is (= nil        (get     p :label)))
           (is (= ["foo" ""] (protobuf/get-raw p :label))))))
     (testing "repeated nullable"
-      (let [p (protobuf/protobuf Bar :labels ["foo" "bar"])]
+      (let [p (protobuf/create Bar :labels ["foo" "bar"])]
         (is (= ["foo" "bar"] (get p :labels)))
         (let [p (util/combine p {:labels [nil]})]
           (is (= ["foo" "bar" nil] (get     p :labels)))
@@ -424,9 +424,9 @@
   (is (= {}    (default-protobuf protobuf.test.Core$Foo :groups))))
 
 (deftest test-use-underscores
-  (let [dashes      (protobuf/protobuf Foo      {:tag_set ["odd"]
+  (let [dashes      (protobuf/create Foo      {:tag_set ["odd"]
                                         :responses [:yes :not-sure :maybe :not-sure :no]})
-        underscores (protobuf/protobuf FooUnder {:tag_set ["odd"]
+        underscores (protobuf/create FooUnder {:tag_set ["odd"]
                                         :responses [:yes :not_sure :maybe :not_sure :no]})]
     (is (= '(:id :responses :tag-set :deleted)   (keys dashes)))
     (is (= [:yes :not-sure :maybe :not-sure :no] (:responses dashes)))
@@ -439,19 +439,19 @@
            (-> (protobuf/protobuf-schema FooUnder) :fields keys set)))))
 
 (deftest test-protobuf-nested-message
-  (let [p (protobuf/protobuf Response :ok false :error (protobuf/protobuf ErrorMsg :code -10 :data "abc"))]
+  (let [p (protobuf/create Response :ok false :error (protobuf/create ErrorMsg :code -10 :data "abc"))]
     (is (= "abc" (get-in p [:error :data])))))
 
 (deftest test-protobuf-nested-null-field
-  (let [p (protobuf/protobuf Response :ok true :error (protobuf/protobuf ErrorMsg :code -10 :data nil))]
+  (let [p (protobuf/create Response :ok true :error (protobuf/create ErrorMsg :code -10 :data nil))]
     (is (:ok p))))
 
 (deftest test-protobuf-seq-and-write-protobuf
   (let [in  (PipedInputStream.)
         out (PipedOutputStream. in)
-        foo (protobuf/protobuf Foo :id 1 :label "foo")
-        bar (protobuf/protobuf Foo :id 2 :label "bar")
-        baz (protobuf/protobuf Foo :id 3 :label "baz")]
+        foo (protobuf/create Foo :id 1 :label "foo")
+        bar (protobuf/create Foo :id 2 :label "bar")
+        baz (protobuf/create Foo :id 3 :label "baz")]
     (protobuf/protobuf-write out foo bar baz)
     (.close out)
     (is (= [{:id 1, :label "foo", :deleted false}
@@ -461,6 +461,6 @@
 
 (deftest test-encoding-errors
   (is (thrown-with-msg? IllegalArgumentException #"error setting string field protobuf.test.core.Foo.label to 8"
-        (protobuf/protobuf Foo :label 8)))
+        (protobuf/create Foo :label 8)))
   (is (thrown-with-msg? IllegalArgumentException #"error adding 1 to string field protobuf.test.core.Foo.tags"
-        (protobuf/protobuf Foo :tags [1 2 3]))))
+        (protobuf/create Foo :tags [1 2 3]))))

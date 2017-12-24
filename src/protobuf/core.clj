@@ -43,8 +43,7 @@
                (Reflector/invokeStaticMethod ^Class map-def "getDescriptor" (to-array nil)))]
          (PersistentProtocolBufferMap$Def/create descriptor naming-strategy size-limit)))))
 
-;; rename to create
-(defn protobuf
+(defn create
   "Construct a protobuf of the given map-def."
   ([^PersistentProtocolBufferMap$Def map-def]
      (PersistentProtocolBufferMap/construct map-def {}))
@@ -130,3 +129,6 @@
 
 (def ^{:doc "Backwards-compatible alias for `mapdef`"}
   protodef #'mapdef)
+
+(def ^{:doc "Backwards-compatible alias for `mapdef`"}
+  protobuf #'create)
