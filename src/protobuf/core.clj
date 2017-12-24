@@ -113,10 +113,9 @@
        (.writeDelimitedTo p out))
      (.flush out))))
 
-;; Rename util protocol to Combiner and the method to combine
-(extend-protocol util/Adjoin
+(extend-protocol util/Combiner
   PersistentProtocolBufferMap
-  (adjoin-onto [^PersistentProtocolBufferMap this other]
+  (combine-onto [^PersistentProtocolBufferMap this other]
     (.append this other)))
 
 ;; TODO make this nil-safe? Or just delete it?
@@ -124,3 +123,7 @@
   "Get value at key ignoring extension fields."
   [^PersistentProtocolBufferMap p key]
   (.getValAt p key false))
+
+;;; Aliases
+(def ^{:doc "Backwards-compatible alias for `util/combine-onto`"}
+  adjoin-onto #'util/combine-onto)

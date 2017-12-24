@@ -28,34 +28,34 @@
       (is (= ["little" "yellow" "different"] (:tags p)))
       (is (= "very" (:label p))))))
 
-(deftest test-adjoin
+(deftest test-combine
   (let [p (protobuf/protobuf Foo :id 5 :tags ["little" "yellow"] :doubles [1.2] :floats [0.01])]
-    (let [p (util/adjoin p {:label "bar"})]
+    (let [p (util/combine p {:label "bar"})]
       (is (= 5     (:id p)))
       (is (= "bar" (:label p)))
       (is (= false (:deleted p)))
       (is (= ["little" "yellow"] (:tags p))))
-    (let [p (util/adjoin (assoc p :deleted true) p)]
+    (let [p (util/combine (assoc p :deleted true) p)]
       (is (= true (:deleted p))))
-    (let [p (util/adjoin p {:tags ["different"]})]
+    (let [p (util/combine p {:tags ["different"]})]
       (is (= ["little" "yellow" "different"] (:tags p))))
-    (let [p (util/adjoin p {:tags ["different"] :label "very"})]
+    (let [p (util/combine p {:tags ["different"] :label "very"})]
       (is (= ["little" "yellow" "different"] (:tags p)))
       (is (= "very" (:label p))))
-    (let [p (util/adjoin p {:doubles [3.4] :floats [0.02]})]
+    (let [p (util/combine p {:doubles [3.4] :floats [0.02]})]
       (is (= [1.2 3.4] (:doubles p)))
       (is (= [(float 0.01) (float 0.02)] (:floats  p)))))
-  (testing "adjoining works with set extension"
+  (testing "combining works with set extension"
     (let [p (protobuf/protobuf Foo :tag-set #{"foo" "bar" "baz"})
           q (protobuf/protobuf Foo :tag-set {"bar" false "foo" false "bap" true})
-          r (util/adjoin p q)]
+          r (util/combine p q)]
       (is (= #{"foo" "bar" "baz"} (p :tag-set)))
       (is (= #{"bap"}             (q :tag-set)))
       (is (= #{"bap" "baz"}       (r :tag-set)))))
-  (testing "adjoining works with counters"
+  (testing "combining works with counters"
     (let [p (protobuf/protobuf Foo :counts {"foo" {:i 5 :d  5.0}})
           q (protobuf/protobuf Foo :counts {"foo" {:i 8 :d -3.0}})
-          r (util/adjoin p q)]
+          r (util/combine p q)]
       (is (=  5   (get-in p [:counts "foo" :i])))
       (is (=  5.0 (get-in p [:counts "foo" :d])))
       (is (=  8   (get-in q [:counts "foo" :i])))
@@ -63,12 +63,12 @@
       (is (=  13  (get-in r [:counts "foo" :i])))
       (is (=  2.0 (get-in r [:counts "foo" :d]))))))
 
-(deftest test-ordered-adjoin
+(deftest test-ordered-combine
   (let [inputs (into (sorted-map) (for [x (range 26)]
                                     [(str x) (str (char (+ (int \a) x)))]))]
     (= (seq inputs)
        (seq (reduce (fn [m [k v]]
-                      (util/adjoin m {:attr_map {k v}}))
+                      (util/combine m {:attr_map {k v}}))
                     (protobuf/protobuf Foo)
                     inputs)))))
 
@@ -294,11 +294,11 @@
   (let [p (protobuf/protobuf Foo :counts {"foo" {:i 5 :d 5.0}})]
     (is (= 5   (get-in p [:counts "foo" :i])))
     (is (= 5.0 (get-in p [:counts "foo" :d])))
-    (let [p (util/adjoin p {:counts {"foo" {:i 2 :d -2.4} "bar" {:i 99}}})]
+    (let [p (util/combine p {:counts {"foo" {:i 2 :d -2.4} "bar" {:i 99}}})]
       (is (= 7   (get-in p [:counts "foo" :i])))
       (is (= 2.6 (get-in p [:counts "foo" :d])))
       (is (= 99  (get-in p [:counts "bar" :i])))
-      (let [p (util/adjoin p {:counts {"foo" {:i -8 :d 4.06} "bar" {:i -66}}})]
+      (let [p (util/combine p {:counts {"foo" {:i -8 :d 4.06} "bar" {:i -66}}})]
         (is (= -1   (get-in p [:counts "foo" :i])))
         (is (= 6.66 (get-in p [:counts "foo" :d])))
         (is (= 33   (get-in p [:counts "bar" :i])))
@@ -314,7 +314,7 @@
     (is (= 1978 (get-in p [:time :year])))
     (is (= 11   (get-in p [:time :month])))
     (is (= 24   (get-in p [:time :day])))
-    (let [p (util/adjoin p {:time {:year 1974 :month 1}})]
+    (let [p (util/combine p {:time {:year 1974 :month 1}})]
       (is (= 1974 (get-in p [:time :year])))
       (is (= 1    (get-in p [:time :month])))
       (is (= nil  (get-in p [:time :day])))
@@ -331,7 +331,7 @@
     (is (= "foo"        (get p :str)))
     (is (= :a           (get p :enu)))
     (is (= keyset (set (keys p))))
-    (let [p (util/adjoin p {:int nil :long nil :flt nil :dbl nil :str nil :enu nil})]
+    (let [p (util/combine p {:int nil :long nil :flt nil :dbl nil :str nil :enu nil})]
       (is (= nil (get p :int)))
       (is (= nil (get p :long)))
       (is (= nil (get p :flt)))
@@ -342,13 +342,13 @@
     (testing "nullable successions"
       (let [p (protobuf/protobuf Bar :label "foo")]
         (is (= "foo" (get p :label)))
-        (let [p (util/adjoin p {:label nil})]
+        (let [p (util/combine p {:label nil})]
           (is (= nil        (get     p :label)))
           (is (= ["foo" ""] (protobuf/get-raw p :label))))))
     (testing "repeated nullable"
       (let [p (protobuf/protobuf Bar :labels ["foo" "bar"])]
         (is (= ["foo" "bar"] (get p :labels)))
-        (let [p (util/adjoin p {:labels [nil]})]
+        (let [p (util/combine p {:labels [nil]})]
           (is (= ["foo" "bar" nil] (get     p :labels)))
           (is (= ["foo" "bar" ""]  (protobuf/get-raw p :labels))))))))
 

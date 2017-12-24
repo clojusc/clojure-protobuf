@@ -96,8 +96,8 @@
           (for [[k v] m]
             (map-entry k (apply f v args))))))
 
-(defprotocol Adjoin
-  (adjoin-onto [left right]
+(defprotocol Combiner
+  (combine-onto [left right]
   "Merge two data structures by combining the contents. For maps, merge recursively by
   adjoining values with the same key. For collections, combine the right and left using
   into or conj. If the left value is a set and the right value is a map, the right value
@@ -105,32 +105,32 @@
   merged set. This makes sets unique from other collections because items can be deleted
   from them."))
 
-(extend-protocol Adjoin
+(extend-protocol Combiner
   IPersistentMap
-  (adjoin-onto [this other]
-    (merge-with adjoin-onto this other))
+  (combine-onto [this other]
+    (merge-with combine-onto this other))
 
   IPersistentSet
-  (adjoin-onto [this other]
+  (combine-onto [this other]
     (into-set this other))
 
   ISeq
-  (adjoin-onto [this other]
+  (combine-onto [this other]
     (concat this other))
 
   IPersistentCollection
-  (adjoin-onto [this other]
+  (combine-onto [this other]
     (into this other))
 
   Object
-  (adjoin-onto [this other]
+  (combine-onto [this other]
     other)
 
   nil
-  (adjoin-onto [this other]
+  (combine-onto [this other]
     other))
 
-(defn adjoin
+(defn combine
   "Merge two data structures by combining the contents. For maps, merge recursively by
   adjoining values with the same key. For collections, combine the right and left using
   into or conj. If the left value is a set and the right value is a map, the right value
@@ -138,7 +138,7 @@
   merged set. This makes sets unique from other collections because items can be deleted
   from them."
   [a b]
-  (adjoin-onto a b))
+  (combine-onto a b))
 
 (defn catbytes [& args]
   (let [out-buf (byte-array (loop [len 0, args (seq args)]
