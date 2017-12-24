@@ -1,11 +1,11 @@
 (ns protobuf.example-test
   (:require
     [clojure.test :refer :all]
-    [protobuf.core :refer :all])
+    [protobuf.core :as protobuf])
   (:import
     (com.google.protobuf ByteString)))
 
-(def Photo (protodef protobuf.test.Example$Photo))
+(def Photo (protobuf/protodef protobuf.test.Example$Photo))
 
 (def data {:id 7, :path "/photos/h2k3j4h9h23", :labels #{"hawaii" "family" "surfing"},
            :attrs {"color space" "RGB", "dimensions" "1632x1224", "alpha" "no"},
@@ -13,4 +13,4 @@
            :image (ByteString/copyFrom (byte-array (map unchecked-byte [1 2 3 4 -1])))})
 
 (deftest example-test
-  (is (= data (apply protobuf Photo (apply concat data)))))
+  (is (= data (apply protobuf/protobuf Photo (apply concat data)))))
