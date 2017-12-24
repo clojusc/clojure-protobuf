@@ -54,12 +54,12 @@ We've found a clean way to do this (and how we set up the tests) is to:
 Now you can use the protocol buffer in Clojure:
 
 ```clojure
-(require '[protobuf.core :refer :all])
+(require '[protobuf.core :as protobuf])
 (import Example$Person)
 
 (def Person (protodef Example$Person))
 
-(def p (protobuf Person :id 4 :name "Alice" :email "alice@example.com"))
+(def p (protobuf/create Person :id 4 :name "Alice" :email "alice@example.com"))
 => {:id 4, :name "Alice", :email "alice@example.com"}
 
 (assoc p :name "Alice B. Carol"))
@@ -68,10 +68,10 @@ Now you can use the protocol buffer in Clojure:
 (assoc p :likes ["climbing" "running" "jumping"])
 => {:id 4, name "Alice", :email "alice@example.com", :likes ["climbing" "running" "jumping"]}
 
-(def b (protobuf-dump p))
+(def b (protobuf/->bytes p))
 => #<byte[] [B@7cbe41ec>
 
-(protobuf-load Person b)
+(protobuf/parse Person b)
 => {:id 4, :name "Alice", :email "alice@example.com"}
 ```
 
