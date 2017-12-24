@@ -52,8 +52,7 @@
   ([^PersistentProtocolBufferMap$Def map-def k v & kvs]
      (PersistentProtocolBufferMap/construct map-def (apply array-map k v kvs))))
 
-;; rename to mapdef->schema
-(defn protobuf-schema
+(defn mapdef->schema
   "Return the schema for the given mapdef."
   [& args]
   (let [^PersistentProtocolBufferMap$Def map-def (apply mapdef args)]
@@ -132,3 +131,6 @@
 
 (def ^{:doc "Backwards-compatible alias for `mapdef`"}
   protobuf #'create)
+
+(def ^{:doc "Backwards-compatible alias for `mapdef`"}
+  protobuf-schema #'mapdef->schema)

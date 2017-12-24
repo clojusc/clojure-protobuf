@@ -352,7 +352,7 @@
           (is (= ["foo" "bar" nil] (get     p :labels)))
           (is (= ["foo" "bar" ""]  (protobuf/get-raw p :labels))))))))
 
-(deftest test-protobuf-schema
+(deftest test-mapdef->schema
   (let [fields
         {:type :struct
          :name "protobuf.test.core.Foo"
@@ -405,8 +405,8 @@
                            :values {:type :struct, :name "protobuf.test.core.Thing"
                                     :fields {:id {:type :string}
                                              :marked {:type :boolean}}}}}}]
-    (is (= fields (protobuf/protobuf-schema Foo)))
-    (is (= fields (protobuf/protobuf-schema protobuf.test.Core$Foo)))))
+    (is (= fields (protobuf/mapdef->schema Foo)))
+    (is (= fields (protobuf/mapdef->schema protobuf.test.Core$Foo)))))
 
 (comment deftest test-default-protobuf
   (is (= 43    (default-protobuf Foo :id)))
@@ -436,7 +436,7 @@
 
     (is (= #{:id :label :tags :parent :responses :tag_set :deleted :attr_map :foo_by_id
              :pair_map :groups :doubles :floats :item_map :counts :time :lat :long :things}
-           (-> (protobuf/protobuf-schema FooUnder) :fields keys set)))))
+           (-> (protobuf/mapdef->schema FooUnder) :fields keys set)))))
 
 (deftest test-protobuf-nested-message
   (let [p (protobuf/create Response :ok false :error (protobuf/create ErrorMsg :code -10 :data "abc"))]

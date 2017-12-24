@@ -54,5 +54,5 @@
                               :prefix :none)))))
 
 (defn codec-schema [proto]
-  (util/dissoc-fields (protobuf/protobuf-schema proto)
+  (util/dissoc-fields (protobuf/mapdef->schema proto)
                         len-key reset-key))
