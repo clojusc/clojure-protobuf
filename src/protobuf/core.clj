@@ -59,12 +59,13 @@
     (protobuf-schema/field-schema (.getMessageType map-def) map-def)))
 
 (defmulti parse
+  "Load a protobuf of the given map-def from a data source.
+
+  Supported data sources are either an array of bytes or an input stream."
   (fn [map-def data & _]
     (type data)))
 
-(defmethod
-  ^{:doc "Load a protobuf of the given map-def from an array of bytes."}
-  parse (Class/forName "[B")
+(defmethod parse (Class/forName "[B")
   ([^PersistentProtocolBufferMap$Def map-def data]
      (when data
        (PersistentProtocolBufferMap/create map-def data)))
@@ -73,9 +74,7 @@
        (let [^CodedInputStream in (CodedInputStream/newInstance data offset length)]
          (PersistentProtocolBufferMap/parseFrom map-def in)))))
 
-(defmethod
-  ^{:doc "Load a protobuf of the given map-def from an `InputStream`."}
-  parse InputStream
+(defmethod parse InputStream
   [^PersistentProtocolBufferMap$Def map-def stream]
   (when stream
     (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
