@@ -121,32 +121,42 @@
 
 ;;; Aliases
 
-(def ^{:doc "Backwards-compatible alias for `protobuf.core/map?`"}
+(def ^{:doc "Backwards-compatible alias for `protobuf.core/map?`"
+       :deprecated "3.5.1-v1.0"}
   protobuf? #'map?)
 
-(def ^{:doc "Backwards-compatible alias for `mapdef?`"}
+(def ^{:doc "Backwards-compatible alias for `mapdef?`"
+       :deprecated "3.5.1-v1.0"}
   protodef? #'mapdef?)
 
-(def ^{:doc "Backwards-compatible alias for `mapdef`"}
+(def ^{:doc "Backwards-compatible alias for `mapdef`"
+       :deprecated "3.5.1-v1.0"}
   protodef #'mapdef)
 
-(def ^{:doc "Backwards-compatible alias for `mapdef`"}
+(def ^{:doc "Backwards-compatible alias for `mapdef`"
+       :deprecated "3.5.1-v1.0"}
   protobuf #'create)
 
-(def ^{:doc "Backwards-compatible alias for `mapdef`"}
+(def ^{:doc "Backwards-compatible alias for `mapdef`"
+       :deprecated "3.5.1-v1.0"}
   protobuf-schema #'mapdef->schema)
 
-(def ^{:doc "Backwards-compatible alias for `parse`"}
+(def ^{:doc "Backwards-compatible alias for `parse`"
+       :deprecated "3.5.1-v1.0"}
   protobuf-load #'parse)
 
-(def ^{:doc "Backwards-compatible alias for `parse`"}
+(def ^{:doc "Backwards-compatible alias for `parse`"
+       :deprecated "3.5.1-v1.0"}
   protobuf-load-stream #'parse)
 
-(def ^{:doc "Backwards-compatible alias for `->bytes`"}
+(def ^{:doc "Backwards-compatible alias for `->bytes`"
+       :deprecated "3.5.1-v1.0"}
   protobuf-dump #'->bytes)
 
-(def ^{:doc "Backwards-compatible alias for `read`"}
+(def ^{:doc "Backwards-compatible alias for `read`"
+       :deprecated "3.5.1-v1.0"}
   protobuf-seq #'read)
 
-(def ^{:doc "Backwards-compatible alias for `write`"}
+(def ^{:doc "Backwards-compatible alias for `write`"
+       :deprecated "3.5.1-v1.0"}
   protobuf-write #'write)
