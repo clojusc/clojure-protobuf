@@ -6,6 +6,11 @@
                   IPersistentSet
                   IPersistentCollection)))
 
+(defn as-fn
+  "Turn an object into a fn if it is not already, by wrapping it in constantly."
+  [x]
+  (if (ifn? x) x, (constantly x)))
+
 (defn fix
   "Walk through clauses, a series of predicate/transform pairs. The
   first predicate that x satisfies has its transformation clause
