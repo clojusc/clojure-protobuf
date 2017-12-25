@@ -1,8 +1,8 @@
-package protobuf.test.codec;
+package protobuf.testing.codec;
 
 import "protobuf/extensions.proto";
 
-option java_package = "protobuf.test";
+option java_package = "protobuf.testing";
 option java_outer_classname = "Codec";
 
 message Foo {

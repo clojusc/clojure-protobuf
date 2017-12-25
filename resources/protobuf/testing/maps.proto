@@ -1,8 +1,8 @@
-package protobuf.test.maps;
+package protobuf.testing.maps;
 
 import "protobuf/extensions.proto";
 
-option java_package = "protobuf.test";
+option java_package = "protobuf.testing";
 option java_outer_classname = "Maps";
 
 message Element {

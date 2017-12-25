@@ -4,10 +4,10 @@
     [protobuf.codec :as protobuf-codec])
   (:import
     (java.nio ByteBuffer)
-    (protobuf.test.Codec$Foo)))
+    (protobuf.testing Codec$Foo)))
 
 (deftest protobuf-codec-test
-  (let [codec (protobuf-codec/create protobuf.test.Codec$Foo)]
+  (let [codec (protobuf-codec/create Codec$Foo)]
     (testing "decode an encoded data structure"
       (let [val {:foo 1 :bar 2}]
         (is (= val (protobuf-codec/decode codec (protobuf-codec/encode codec val))))))
@@ -51,8 +51,8 @@
                (protobuf-codec/decode codec (concat data1 data2 data3))))))))
 
 (deftest repeated-protobufs
-  (let [len (protobuf-codec/length-prefix protobuf.test.Codec$Foo)
-        codec (protobuf-codec/create protobuf.test.Codec$Foo :repeated true)]
+  (let [len (protobuf-codec/length-prefix Codec$Foo)
+        codec (protobuf-codec/create Codec$Foo :repeated true)]
     (testing "length-prefix"
       (doseq [i [0 10 100 1000 10000 100000 Integer/MAX_VALUE]]
         (is (= i (protobuf-codec/decode len (protobuf-codec/encode len i))))))

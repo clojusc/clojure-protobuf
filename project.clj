@@ -30,7 +30,7 @@
         [lein-shell "0.5.0"]]
       :java-source-paths [
         "target/examples"
-        "target/test"]}
+        "target/testing"]}
     :docs {
       :dependencies [
         [clojang/codox-theme "0.2.0-SNAPSHOT"]]

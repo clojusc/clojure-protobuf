@@ -4,15 +4,20 @@
     [protobuf.core :as protobuf]
     [protobuf.util :as util])
   (:import
-    (java.io PipedInputStream PipedOutputStream)))
+    (java.io PipedInputStream PipedOutputStream)
+    (protobuf.testing Core$Bar
+                      Core$ErrorMsg
+                      Core$Foo
+                      Core$Response
+                      Maps$Struct)))
 
-(def Foo (protobuf/mapdef protobuf.test.Core$Foo))
-(def FooUnder (protobuf/mapdef protobuf.test.Core$Foo
+(def Foo (protobuf/mapdef Core$Foo))
+(def FooUnder (protobuf/mapdef Core$Foo
                         {:naming-strategy protobuf.PersistentProtocolBufferMap$Def/protobufNames}))
-(def Bar (protobuf/mapdef protobuf.test.Core$Bar))
-(def Response (protobuf/mapdef protobuf.test.Core$Response))
-(def ErrorMsg (protobuf/mapdef protobuf.test.Core$ErrorMsg))
-(def Maps (protobuf/mapdef protobuf.test.Maps$Struct))
+(def Bar (protobuf/mapdef Core$Bar))
+(def Response (protobuf/mapdef Core$Response))
+(def ErrorMsg (protobuf/mapdef Core$ErrorMsg))
+(def Maps (protobuf/mapdef Maps$Struct))
 
 (deftest test-conj
   (let [p (protobuf/create Foo :id 5 :tags ["little" "yellow"] :doubles [1.2 3.4 5.6] :floats [0.01 0.02 0.03])]
@@ -355,12 +360,12 @@
 (deftest test-mapdef->schema
   (let [fields
         {:type :struct
-         :name "protobuf.test.core.Foo"
+         :name "protobuf.testing.core.Foo"
          :fields {:id      {:default 43, :type :int}
                   :deleted {:default false, :type :boolean}
                   :lat     {:type :double}
                   :long    {:type :float}
-                  :parent  {:type :struct, :name "protobuf.test.core.Foo"}
+                  :parent  {:type :struct, :name "protobuf.testing.core.Foo"}
                   :floats  {:type :list, :values {:type :float}}
                   :doubles {:type :list, :values {:type :double}}
                   :label   {:type :string, :c 3, :b 2, :a 1}
@@ -368,28 +373,28 @@
                   :tag-set {:type :set,  :values {:type :string}}
                   :counts  {:type   :map
                             :keys   {:type :string}
-                            :values {:type :struct, :name "protobuf.test.core.Count"
+                            :values {:type :struct, :name "protobuf.testing.core.Count"
                                      :fields {:key {:type :string}
                                               :i {:counter true, :type :int}
                                               :d {:counter true, :type :double}}}}
                   :foo-by-id {:type :map
                               :keys   {:default 43, :type :int}
-                              :values {:type :struct, :name "protobuf.test.core.Foo"}}
+                              :values {:type :struct, :name "protobuf.testing.core.Foo"}}
                   :attr-map {:type :map
                              :keys   {:type :string}
                              :values {:type :string}}
                   :pair-map {:type :map
                              :keys   {:type :string}
-                             :values {:type :struct, :name "protobuf.test.core.Pair"
+                             :values {:type :struct, :name "protobuf.testing.core.Pair"
                                       :fields {:key {:type :string}
                                                :val {:type :string}}}}
                   :groups {:type :map
                            :keys   {:type :string}
                            :values {:type :list
-                                    :values {:type :struct, :name "protobuf.test.core.Foo"}}}
+                                    :values {:type :struct, :name "protobuf.testing.core.Foo"}}}
                   :responses {:type :list
                               :values {:type :enum, :values #{:no :yes :maybe :not-sure}}}
-                  :time {:type :struct, :name "protobuf.test.core.Time", :succession true
+                  :time {:type :struct, :name "protobuf.testing.core.Time", :succession true
                          :fields {:year   {:type :int}
                                   :month  {:type :int}
                                   :day    {:type :int}
@@ -397,16 +402,16 @@
                                   :minute {:type :int}}}
                   :item-map {:type :map
                              :keys   {:type :string}
-                             :values {:type :struct, :name "protobuf.test.core.Item"
+                             :values {:type :struct, :name "protobuf.testing.core.Item"
                                       :fields {:item   {:type :string},
                                                :exists {:default true, :type :boolean}}}}
                   :things {:type :map
                            :keys {:type :string}
-                           :values {:type :struct, :name "protobuf.test.core.Thing"
+                           :values {:type :struct, :name "protobuf.testing.core.Thing"
                                     :fields {:id {:type :string}
                                              :marked {:type :boolean}}}}}}]
     (is (= fields (protobuf/mapdef->schema Foo)))
-    (is (= fields (protobuf/mapdef->schema protobuf.test.Core$Foo)))))
+    (is (= fields (protobuf/mapdef->schema Core$Foo)))))
 
 (comment deftest test-default-protobuf
   (is (= 43    (default-protobuf Foo :id)))
@@ -421,7 +426,7 @@
   (is (= {}    (default-protobuf Foo :groups)))
   (is (= {}    (default-protobuf Foo :item-map)))
   (is (= false (default-protobuf Foo :deleted)))
-  (is (= {}    (default-protobuf protobuf.test.Core$Foo :groups))))
+  (is (= {}    (default-protobuf Core$Foo :groups))))
 
 (deftest test-use-underscores
   (let [dashes      (protobuf/create Foo      {:tag_set ["odd"]
@@ -460,7 +465,7 @@
            (protobuf/read Foo in)))))
 
 (deftest test-encoding-errors
-  (is (thrown-with-msg? IllegalArgumentException #"error setting string field protobuf.test.core.Foo.label to 8"
+  (is (thrown-with-msg? IllegalArgumentException #"error setting string field protobuf.testing.core.Foo.label to 8"
         (protobuf/create Foo :label 8)))
-  (is (thrown-with-msg? IllegalArgumentException #"error adding 1 to string field protobuf.test.core.Foo.tags"
+  (is (thrown-with-msg? IllegalArgumentException #"error adding 1 to string field protobuf.testing.core.Foo.tags"
         (protobuf/create Foo :tags [1 2 3]))))
