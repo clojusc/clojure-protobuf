@@ -28,7 +28,9 @@
         [jonase/eastwood "0.2.5"]
         [lein-ancient "0.6.15"]
         [lein-shell "0.5.0"]]
-      :java-source-paths ["target/test"]}
+      :java-source-paths [
+        "target/examples"
+        "target/test"]}
     :docs {
       :dependencies [
         [clojang/codox-theme "0.2.0-SNAPSHOT"]]
@@ -60,6 +62,11 @@
        "+test"
        "shell"
        "bin/compile-test-protobufs"]
+    "protoc-examples" [
+       "with-profile"
+       "+test"
+       "shell"
+       "bin/compile-example-protobufs"]
     "check-deps" [
       "with-profile"
       "+test"
@@ -82,6 +89,7 @@
       ["clean"]
       ["protoc-extension"]
       ["protoc-test"]
+      ["protoc-examples"]
       ["repl"]]
     "docs" [
       "with-profile"
@@ -96,6 +104,7 @@
       ["clean"]
       ["protoc-extension"]
       ["protoc-test"]
+      ["protoc-examples"]
       ["test-all"]]
     "build-test" [
       "do"
@@ -105,4 +114,5 @@
       ["lint"]
       ["protoc-extension"]
       ["protoc-test"]
+      ["protoc-examples"]
       ["test-all"]]})
