@@ -21,6 +21,10 @@ Add the dependency to your `project.clj`:
 Then, given a project with the following in `resources/proto/your/namespace/person.proto`:
 
 ```proto
+package your.namespace.person;
+
+option java_outer_classname = "Example";
+
 message Person {
   required int32  id    = 1;
   required string name  = 2;
@@ -57,14 +61,14 @@ Now you can use the protocol buffer in Clojure:
 
 ```clojure
 (require '[protobuf.core :as protobuf])
-(import Example$Person)
+(import (your.namespace.person Example$Person)
 
-(def Person (protodef Example$Person))
+(def Person (protobuf/mapdef Example$Person))
 
 (def p (protobuf/create Person :id 4 :name "Alice" :email "alice@example.com"))
 => {:id 4, :name "Alice", :email "alice@example.com"}
 
-(assoc p :name "Alice B. Carol"))
+(assoc p :name "Alice B. Carol")
 => {:id 4, :name "Alice B. Carol", :email "alice@example.com"}
 
 (assoc p :likes ["climbing" "running" "jumping"])
@@ -82,6 +86,13 @@ similar to a struct-map, except you cannot insert fields that aren't specified
 in the `.proto` file.
 
 
+## Documentation
+
+The above usage is a quick taste; for more examples as well as the current and
+previous reference documentation, visit the
+[Clojure protobuf documentation][docs].
+
+
 <!-- Named page links below: /-->
 
 [travis]: https://travis-ci.org/clojusc/protobuf
@@ -95,3 +106,4 @@ in the `.proto` file.
 [clojure-v]: https://img.shields.io/badge/clojure-1.8.0-blue.svg
 [clojars]: https://clojars.org/clojusc/protobuf
 [clojars-badge]: https://img.shields.io/clojars/v/clojusc/protobuf.svg
+[docs]: https://clojusc.github.io/protobuf
