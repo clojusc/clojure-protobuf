@@ -54,7 +54,7 @@
     :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
     :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
-    ;; AOT compilation, REPL, and doc-generation
+    ;; Dev tasks
     "ubercompile" [
       "with-profile"
       "+ubercompile"
@@ -68,6 +68,7 @@
       ["protoc-test"]
       ["protoc-examples"]
       ["repl"]]
+    ;; Doc-generation
     "clojuredocs" [
       "with-profile"
       "+docs"
