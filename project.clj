@@ -1,4 +1,4 @@
-(defproject clojusc/protobuf "3.5.1-v1.0"
+(defproject clojusc/protobuf "3.5.1-v1.1-SNAPSHOT"
   :description "A Clojure interface to Google's protocol buffers"
   :url "https://github.com/clojusc/protobuf"
   :license {
