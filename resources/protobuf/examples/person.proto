@@ -1,0 +1,10 @@
+package protobuf.examples.person;
+
+option java_outer_classname = "Example";
+
+message Person {
+  required int32 id = 1;
+  required string name = 2;
+  optional string email = 3;
+  repeated string likes = 4;
+}
