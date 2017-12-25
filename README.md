@@ -14,7 +14,7 @@ faster to serialize and deserialize than standard Clojure objects.
 
 ## Getting started
 
-Add the dependency to your project.clj
+Add the dependency to your `project.clj`:
 
 [![Clojars Project][clojars-badge]][clojars]
 
