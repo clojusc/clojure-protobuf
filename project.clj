@@ -52,32 +52,7 @@
     :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
     :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
-    "protoc-extension" [
-      "with-profile"
-      "+test"
-      "shell"
-      "bin/compile-protobuf-extension"]
-    "protoc-test" [
-       "with-profile"
-       "+test"
-       "shell"
-       "bin/compile-test-protobufs"]
-    "protoc-examples" [
-       "with-profile"
-       "+test"
-       "shell"
-       "bin/compile-example-protobufs"]
-    "check-deps" [
-      "with-profile"
-      "+test"
-      "ancient"
-      "check"
-      ":all"]
-    "lint" [
-      "with-profile"
-      "+test"
-      "eastwood"
-      "{:namespaces [:source-paths] :source-paths [\"src\"]}"]
+    ;; AOT compilation, REPL, and doc-generation
     "ubercompile" [
       "with-profile"
       "+ubercompile"
@@ -95,6 +70,34 @@
       "with-profile"
       "+docs"
       "codox"]
+    ;; Protobuf compilation tasks
+    "protoc-extension" [
+      "with-profile"
+      "+test"
+      "shell"
+      "bin/compile-protobuf-extension"]
+    "protoc-test" [
+       "with-profile"
+       "+test"
+       "shell"
+       "bin/compile-test-protobufs"]
+    "protoc-examples" [
+       "with-profile"
+       "+test"
+       "shell"
+       "bin/compile-example-protobufs"]
+    ;; Deps, linting, and tests
+    "check-deps" [
+      "with-profile"
+      "+test"
+      "ancient"
+      "check"
+      ":all"]
+    "lint" [
+      "with-profile"
+      "+test"
+      "eastwood"
+      "{:namespaces [:source-paths] :source-paths [\"src\"]}"]
     "test-all" [
       "with-profile"
       "+1.5:+1.6:+1.7:+1.9:+default"
