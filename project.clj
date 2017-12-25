@@ -36,7 +36,8 @@
       :dependencies [
         [clojang/codox-theme "0.2.0-SNAPSHOT"]]
       :plugins [
-        [lein-codox "0.10.3"]]
+        [lein-codox "0.10.3"]
+        [lein-marginalia "0.9.1"]]
       :codox {
         :project {
           :name "protobuf"
@@ -79,6 +80,9 @@
     "docs" [
       "do"
       ["clojuredocs"]
+      ["marg" "--dir" "docs/current"
+        "--file" "marginalia.html"
+        "--name" "Clojure Protocol Buffer Library"]
       ["javadocs"]]
     ;; Protobuf compilation tasks
     "protoc-extension" [
