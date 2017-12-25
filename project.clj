@@ -11,7 +11,8 @@
     [gloss "0.2.6"]
     [org.clojure/clojure "1.8.0"]
     [org.flatland/io "0.3.0"]]
-  :java-source-paths ["src"]
+  :source-paths ["src/clj"]
+  :java-source-paths ["src/java"]
   :profiles {
     :ubercompile {
       :aot :all}
@@ -97,7 +98,7 @@
       "with-profile"
       "+test"
       "eastwood"
-      "{:namespaces [:source-paths] :source-paths [\"src\"]}"]
+      "{:namespaces [:source-paths] :source-paths [\"src/clj\"]}"]
     "test-all" [
       "with-profile"
       "+1.5:+1.6:+1.7:+1.9:+default"

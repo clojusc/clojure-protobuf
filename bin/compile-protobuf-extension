@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-OUT_DIR=src
+OUT_DIR=src/java
 
 mkdir -p $OUT_DIR
 protoc \
