@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+OUT_DIR=docs/current/javadoc
+
+rm -rf $OUT_DIR
+
+javadoc \
+  -d $OUT_DIR \
+  -public protobuf \
+  -windowtitle "Clojure Protocol Buffer Library" \
+  src/java/protobuf/*.java

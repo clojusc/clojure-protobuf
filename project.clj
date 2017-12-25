@@ -67,10 +67,19 @@
       ["protoc-test"]
       ["protoc-examples"]
       ["repl"]]
-    "docs" [
+    "clojuredocs" [
       "with-profile"
       "+docs"
       "codox"]
+    "javadocs" [
+      "with-profile"
+      "+test"
+      "shell"
+      "bin/javadoc"]
+    "docs" [
+      "do"
+      ["clojuredocs"]
+      ["javadocs"]]
     ;; Protobuf compilation tasks
     "protoc-extension" [
       "with-profile"
