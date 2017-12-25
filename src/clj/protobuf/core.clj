@@ -113,6 +113,9 @@
   (combine-onto [^PersistentProtocolBufferMap this other]
     (.append this other)))
 
+(def ^{:doc "A convenience alias for `util/combine`"}
+  combine #'util/combine)
+
 ;; TODO make this nil-safe? Or just delete it?
 (defn get-raw
   "Get value at key ignoring extension fields."
