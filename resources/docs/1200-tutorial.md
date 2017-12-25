@@ -1,8 +1,7 @@
 # Tutorial: Protocol Buffer Basics
 
-*Note: The majority of the content for this tutorial was taken from the
-[official Google protobuf Java tutorial][java-tut], with additions, removals,
-and other changes.*
+*Note: The content for this tutorial was taken from the
+[official Google protobuf Java tutorial][java-tut].*
 
 
 ## Introduction
@@ -84,9 +83,9 @@ message Person {
   optional string email = 3;
 
   enum PhoneType {
-    mobile = 0;
-    home = 1;
-    work = 2;
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
   }
 
   message PhoneNumber {
@@ -227,7 +226,7 @@ For example, this is what the Clojure protobuf project has set, using the
 ```
 
 <blockquote>
-For convenience, the Clojure protobuf project always compiles the examples
+Fore convenience, the Clojure protobuf project always compiles the examples
 and the tests before starting up the REPL, so they are always freshly available
 to developers.
 </blockquote>
@@ -246,26 +245,37 @@ $ lein repl
 First we'll pull in the Clojure API:
 
 ```clj
-[protobuf.dev] λ=> (require '[clojure.java.io :as io]
-                            '[protobuf.core :as protobuf])
+[protobuf.dev] λ=> (require '[protobuf.core :as protobuf])
 nil
 ```
 
 Then we'll import the generated Java classes we want to use:
 
 ```clj
-[protobuf.dev] λ=> (import '(protobuf.examples.tutorial
-                             AddressBookProtos$Person
-                             AddressBookProtos$Person$PhoneNumber
-                             AddressBookProtos$AddressBook))
+[protobuf.dev] λ=> (import '(protobuf.examples.tutorial AddressBookProtos$Person
+              #_=>                                      AddressBookProtos$Person$PhoneNumber
+              #_=>                                      AddressBookProtos$AddressBook))
 protobuf.examples.tutorial.AddressBookProtos$AddressBook
 ```
 
-Note that for nested inner classes, we simply use the inner class separator
-`$` of Clojure's Java inter-op.
+Note that for nested inner classes, we simply keep using the inner class
+separator `$` of Clojure's Java inter-op.
+
+Next we'll use a Java wrapper that let's us treat these like maps:
 
 ```clj
-[protobuf.dev] λ=> (pprint (protobuf/schema AddressBookProtos$AddressBook))
+[protobuf.dev] λ=> (def Person (protobuf/mapdef AddressBookProtos$Person))
+#'protobuf.dev/Person
+[protobuf.dev] λ=> (def PhoneNumber (protobuf/mapdef AddressBookProtos$Person$PhoneNumber))
+#'protobuf.dev/PhoneNumber
+[protobuf.dev] λ=> (def AddressBook (protobuf/mapdef AddressBookProtos$AddressBook))
+#'protobuf.dev/AddressBook
+```
+
+We can view the full, nested data schema in Clojure data:
+
+```clj
+[protobuf.dev] λ=> (pprint (protobuf/mapdef->schema AddressBook))
 {:type :struct,
  :name "tutorial.AddressBook",
  :fields
@@ -295,209 +305,36 @@ nil
 
 <blockquote>
 There's currently a bug/missing feature where the default value of an `enum` is
-not converted to Clojure data.
-
-For current status on this issue, see:
+not converted to Clojure data. For current status on this issue, see:
 <a href="https://github.com/clojusc/protobuf/issues/22">https://github.com/clojusc/protobuf/issues/22</a>
 </blockquote>
 
+## Message Functions
 
-## The `ProtoBufAPI`
+TBD
 
-The following methods all take an instance of `protobuf.core.ProtoBufAPI` as
-their first argument. An example implementation is
-`protobuf.impl.flatland.core.FlatlandProtoBuf`.
+## Parsing and Serialization
 
-Note that the constructor is not a method, and as such, does not take a
-`ProtoBufAPI` instance as its first arguement.
+* `protobuf/parse` - Given an array or stream of bytes, we can parse these
+  to a Clojure protobuf data structure
+* `protobuf/->bytes` - Given a Java protobuf wrapper, we can convert this to
+  an array of raw bytes
 
-### Instantiation
+## Writing a Message
 
-* `protobuf/create` - Takes a compiled protocol buffer class, as created by the
-  `protoc` compiler, as well as the data (fields) to use in creating the
-  protocol buffer message for the class. Returns a `protobuf.core.ProtoBufAPI`
-  implementation
+TBD
 
-### Serialization and Deserialization
+## Reading a Message
 
-* `protobuf/->bytes` - Given an instance of a Clojure ProtoBuf, convert its message to
-   an array of raw bytes; this is the serialization method.
-* `protobuf/bytes->` - Given an array or stream of bytes, convert it
-  to a Clojure ProtoBuf instance; this is the deserialization method.
-
-### Reading and Writing
-
-* `protobuf/read` - Given an instance of a Clojure ProtoBuf and an input
-  object (anthying that can be coerced to a `InputStream`), read from the input
-  and return a Clojure ProtoBuf.
-* `protobuf/write` - Given an instance of a Clojure ProtoBuf and an output
-  object (anthying that can be coerced to a `OutputStream`), write the
-  serialized bytes of the instance to the output.
-
-### Inspection
-
-* `protobuf/->schema` - Given an instance of a Clojure ProtoBuf, return the
-  data for its protocol buffer schema.
-
-
-## Example Usage
-
-### Creating Messages
-
-The `create` function generates the appropriate protocol buffer message.
-We'll use that now to create a list of `PhoneNumber` messages:
-
-```clj
-[protobuf.dev] λ=> (def phones [(protobuf/create AddressBookProtos$Person$PhoneNumber
-                                                 {:number "555-1212" :type :home})
-                                (protobuf/create AddressBookProtos$Person$PhoneNumber
-                                                 {:number "555-1213" :type :mobile})
-                                (protobuf/create AddressBookProtos$Person$PhoneNumber
-                                                 {:number "555-1214" :type :work})])
-#'protobuf.dev/phones
-```
-
-<blockquote>
-Note that currently only lower-case enum values are supported by Clojure
-protobuf; if you create `.proto` files with enum fields whose values contain
-any capital letters, your code will be unstable and likely eventually break.
-
-For current status on this issue, see
-<a href="https://github.com/clojusc/protobuf/issues/25">https://github.com/clojusc/protobuf/issues/25</a>
-</blockquote>
-
-Now we can use these when creating our `Person` message:
-
-```clj
-[protobuf.dev] λ=> (def alice (protobuf/create AddressBookProtos$Person
-                                               {:id 108
-                                                :name "Alice"
-                                                :email "alice@example.com"
-#'protobuf.dev/alice
-```
-
-And then that can be used when creating (or updating) an `AddressBook` message:
-
-```clj
-[protobuf.dev] λ=> (def addresses (protobuf/create AddressBookProtos$AddressBook
-                                                   {:people [alice]}))
-#'protobuf.dev/addresses
-```
-
-Let's take a quick look at the result:
-
-```clj
-[protobuf.dev] λ=> (pprint addresses)
-{:people
- [{:name "Alice",
-   :id 108,
-   :email "alice@example.com",
-   :phones
-   [{:number "555-1212", :type :home}
-    {:number "555-1213", :type :mobile}
-    {:number "555-1214", :type :work}]}]}
-nil
-```
-
-
-### Writing a Message
-
-These can then be written to an output stream:
-
-```clj
-[protobuf.dev] λ=> (protobuf/write addresses "/tmp/address-book.db")
-nil
-```
-
-Note that the second argument doesn't have to be a string representing a file
-name; it can be anything which `clojure.java.io/output-stream` can coerce to a
-stream (e.g., `OutputStream`, `File`, `URI`, `URL`, `Socket`, or `String`).
-
-Take a look at the contents of `/tmp/address-book.db` to convince yourself that
-the data was actually written there. Then, we'll try reading it back in ...
-
-
-### Reading a Message
-
-Reading stored protobuf data is just as easy as writing it:
-
-```clj
-[protobuf.dev] λ=> (def address-book (protobuf/read addresses "/tmp/address-book.db"))
-#'protobuf.dev/address-book
-[protobuf.dev] λ=> (= addresses address-book)
-true
-```
-
-It may seem a bit awkward to have need an instance already in order to read
-data to _create_ an instance, but the instance is what holds the underlying
-Java class, which is needed for the read operation. It's not that bad,
-really -- you can create an empty instance and use that for a `read`, for
-example:
-
-```clj
-[protobuf.dev] λ=> (def address-book (protobuf/read
-                                      (protobuf/create AddressBookProtos$AddressBook)
-                                                       "/tmp/address-book.db"))
-#'protobuf.dev/address-book
-[protobuf.dev] λ=> (pprint address-book)
-{:people
- [{:name "Alice",
-   :id 108,
-   :email "alice@example.com",
-   :phones
-   [{:number "555-1212", :type :home}
-    {:number "555-1213", :type :mobile}
-    {:number "555-1214", :type :work}]}]}
-nil
-```
-
+TBD
 
 ## Extending a Protocol
 
-Sooner or later after you release the code that uses your protocol buffer, you will undoubtedly want to "improve" the protocol buffer's definition. If you want your new buffers to be backwards-compatible, and your old buffers to be forward-compatible – and you almost certainly do want this – then there are some rules you need to follow. In the new version of the protocol buffer:
-
-* you **must not** change the tag numbers of any existing fields.
-* you **must not** add or delete any required fields.
-* you *may* delete optional or repeated fields.
-* you *may* add new optional or repeated fields but you must use fresh tag
-  numbers (i.e. tag numbers that were never used in this protocol buffer,
-  not even by deleted fields).
-
-If you follow these rules, old code will happily read new messages and simply
-ignore any new fields. To the old code, optional fields that were deleted will
-simply have their default value, and deleted repeated fields will be empty.
-New code will also transparently read old messages. However, keep in mind that
-new optional fields will not be present in old messages, so you will need to
-either check explicitly whether they're set or provide a reasonable default
-value in your `.proto` file with `[default = value]` after the tag number.
-
-If the default value is not specified for an optional element, a type-specific
-default value is used instead: for strings, the default value is the empty
-string. For booleans, the default value is `false`. For numeric types, the
-default value is zero. Note also that if you added a new repeated field, your
-new code will not be able to tell whether it was left empty (by new code) or
-never set at all (by old code).
-
-Be sure to see our docs on [Extension usage][extension-usage] for Clojure
-protobuf.
-
+TBD
 
 ## Advanced Usage
 
-Protocol buffers have uses that go beyond simple accessors and serialization.
-Be sure to explore the [Java API reference][java-api-ref] to see what else you
-can do with them.
-
-One key feature provided by protocol message classes is `reflection`. You can
-iterate over the fields of a message and manipulate their values without
-writing your code against any specific message type. One very useful way to
-use reflection is for converting protocol messages to and from other
-encodings, such as XML or JSON. A more advanced use of reflection might be to
-find differences between two messages of the same type, or to develop a sort
-of "regular expressions for protocol messages" in which you can write
-expressions that match certain message contents. If you use your imagination,
-it's possible to apply Protocol Buffers to a much wider range of problems than
-you might initially expect!
+TBD
 
 
 <!-- Named page links below: /-->
@@ -509,4 +346,3 @@ you might initially expect!
 [java-generated]: https://developers.google.com/protocol-buffers/docs/reference/java-generated
 [enc-ref]: https://developers.google.com/protocol-buffers/docs/encoding
 [download]: https://developers.google.com/protocol-buffers/docs/downloads.html
-[extension-usage]: 1100-extensions.html
