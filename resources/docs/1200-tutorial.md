@@ -186,7 +186,7 @@ classes you'll need to read and write `AddressBook` (and hence `Person` and
 `PhoneNumber`) messages. To do this, you need to run the protocol buffer
 compiler `protoc` on your `.proto`:
 
-1. If you haven't installed this yet, now is the time. Your operating system's
+1. If you haven't installed `protoc` yet, now is the time. Your operating system's
    package manager very likely already provides a version for you -- search
    there first. If not, you can [download it][download] from Google.
 1. Now run the compiler, specifying:
@@ -210,10 +210,10 @@ $ ls -1 target/examples/protobuf/examples/tutorial/
 AddressBookProtos.java
 ```
 
-To have `lein` compile protobuf `.java` source files to `.class` that can be
-used from Clojure, we need to make sure that `lein` knows about our Java
-sources -- with do this with the `:java-source-paths` key in the `project.clj`
-file, either at the top-level or in an appropriate profile.
+To have `lein` compile protobuf `.java` source files to `.class` files that
+can be used from Clojure, we need to make sure that `lein` knows about our
+Java sources -- with do this with the `:java-source-paths` key in the
+`project.clj` file, either at the top-level or in an appropriate profile.
 
 For example, this is what the Clojure protobuf project has set, using the
 `:test` profile:
