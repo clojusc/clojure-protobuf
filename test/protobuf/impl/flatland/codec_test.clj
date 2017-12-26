@@ -1,7 +1,7 @@
-(ns protobuf.codec-test
+(ns protobuf.impl.flatland.codec-test
   (:require
     [clojure.test :refer :all]
-    [protobuf.codec :as protobuf-codec])
+    [protobuf.impl.flatland.codec :as protobuf-codec])
   (:import
     (java.nio ByteBuffer)
     (protobuf.testing Codec$Foo)))

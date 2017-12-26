@@ -1,7 +1,8 @@
-(ns protobuf.core
+(ns protobuf.impl.flatland.mapdef
   (:require
     [clojure.java.io :as io]
-    [protobuf.schema :as protobuf-schema]
+    [protobuf.impl.flatland.map :as protobuf-map]
+    [protobuf.impl.flatland.schema :as protobuf-schema]
     [protobuf.util :as util])
   (:import
     (clojure.lang Reflector)
@@ -14,11 +15,6 @@
               PersistentProtocolBufferMap$Def
               PersistentProtocolBufferMap$Def$NamingStrategy))
   (:refer-clojure :exclude [map? read]))
-
-(defn map?
-  "Is the given object a `PersistentProtocolBufferMap?`"
-  [obj]
-  (instance? PersistentProtocolBufferMap obj))
 
 (defn mapdef?
   "Is the given object a `PersistentProtocolBufferMap$Def?`"
@@ -82,10 +78,8 @@
 
 (defn ^"[B" ->bytes
   "Return the byte representation of the given protobuf."
-  ([^PersistentProtocolBufferMap p]
-     (.toByteArray p))
-  ([^PersistentProtocolBufferMap$Def map-def m]
-     (->bytes (PersistentProtocolBufferMap/construct map-def m))))
+  [^PersistentProtocolBufferMap$Def map-def m]
+  (protobuf-map/->bytes (PersistentProtocolBufferMap/construct map-def m)))
 
 (defn read
   "Lazily read a sequence of length-delimited protobufs of the specified map-def
@@ -115,51 +109,3 @@
 
 (def ^{:doc "A convenience alias for `util/combine`"}
   combine #'util/combine)
-
-;; TODO make this nil-safe? Or just delete it?
-(defn get-raw
-  "Get value at key ignoring extension fields."
-  [^PersistentProtocolBufferMap p key]
-  (.getValAt p key false))
-
-;;; Aliases
-
-(def ^{:doc "Backwards-compatible alias for `protobuf.core/map?`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf? #'map?)
-
-(def ^{:doc "Backwards-compatible alias for `mapdef?`"
-       :deprecated "3.5.1-v1.0"}
-  protodef? #'mapdef?)
-
-(def ^{:doc "Backwards-compatible alias for `mapdef`"
-       :deprecated "3.5.1-v1.0"}
-  protodef #'mapdef)
-
-(def ^{:doc "Backwards-compatible alias for `mapdef`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf #'create)
-
-(def ^{:doc "Backwards-compatible alias for `mapdef`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf-schema #'mapdef->schema)
-
-(def ^{:doc "Backwards-compatible alias for `parse`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf-load #'parse)
-
-(def ^{:doc "Backwards-compatible alias for `parse`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf-load-stream #'parse)
-
-(def ^{:doc "Backwards-compatible alias for `->bytes`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf-dump #'->bytes)
-
-(def ^{:doc "Backwards-compatible alias for `read`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf-seq #'read)
-
-(def ^{:doc "Backwards-compatible alias for `write`"
-       :deprecated "3.5.1-v1.0"}
-  protobuf-write #'write)

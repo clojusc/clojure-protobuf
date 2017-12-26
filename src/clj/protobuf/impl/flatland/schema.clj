@@ -1,4 +1,4 @@
-(ns protobuf.schema
+(ns protobuf.impl.flatland.schema
   (:require
     [clojure.string :as string]
     [protobuf.util :as util])

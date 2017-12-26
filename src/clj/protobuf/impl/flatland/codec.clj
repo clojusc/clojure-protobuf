@@ -1,4 +1,4 @@
-(ns protobuf.codec
+(ns protobuf.impl.flatland.codec
   (:require
     [clojure.java.io :as io]
     ;; flatland.io extends Seqable so we can concat InputStream from
@@ -8,7 +8,8 @@
     [gloss.core.formats :as gloss-formats]
     [gloss.io :as gloss-io]
     [gloss.core.protocols :as gloss-protocols]
-    [protobuf.core :as protobuf]
+    [protobuf.impl.flatland.mapdef :as protobuf]
+    [protobuf.impl.flatland.map :as protobuf-map]
     [protobuf.util :as util]))
 
 (declare create)
@@ -46,12 +47,13 @@
           (sizeof [this] nil)
           (write-bytes [this _ val]
             (when (and validator (not (validator val)))
-              (throw (IllegalStateException. "Invalid value in #'protobuf.codec/create")))
+              (throw (IllegalStateException.
+                      "Invalid value in #'protobuf.impl.flatland.codec/create")))
             (gloss-formats/to-buf-seq
-             (protobuf/->bytes
-              (if (protobuf/map? val)
-                val
-                (protobuf/create proto val))))))
+              (protobuf-map/->bytes
+                (if (protobuf-map/map? val)
+                  val
+                  (protobuf/create proto val))))))
         (util/fix
           repeated
           #(gloss/repeated (gloss/finite-frame (length-prefix proto) %)

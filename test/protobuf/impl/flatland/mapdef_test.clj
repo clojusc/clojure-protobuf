@@ -1,7 +1,8 @@
-(ns protobuf.core-test
+(ns protobuf.impl.flatland.mapdef-test
   (:require
     [clojure.test :refer :all]
-    [protobuf.core :as protobuf]
+    [protobuf.impl.flatland.mapdef :as protobuf]
+    [protobuf.impl.flatland.map :as protobuf-map]
     [protobuf.util :as util])
   (:import
     (java.io PipedInputStream PipedOutputStream)
@@ -133,7 +134,7 @@
 
     ;; TODO add test back once we re-enable this check
     (comment
-      (is (thrown? Exception (protobuf/->bytes p))
+      (is (thrown? Exception (protobuf-map/->bytes p))
           "Should refuse to serialize with stuff in extmap"))))
 
 (deftest test-string-keys
@@ -154,8 +155,8 @@
                     :tags ["savory"] :tag-set {"bar" false "foo" false "bap" true}
                     :things {"first" {:marked true}})
         r (protobuf/create Foo :label "bad")
-        s (protobuf/parse Foo (util/catbytes (protobuf/->bytes p) (protobuf/->bytes q)))
-        t (protobuf/parse Foo (util/catbytes (protobuf/->bytes p) (protobuf/->bytes r)))]
+        s (protobuf/parse Foo (util/catbytes (protobuf-map/->bytes p) (protobuf-map/->bytes q)))
+        t (protobuf/parse Foo (util/catbytes (protobuf-map/->bytes p) (protobuf-map/->bytes r)))]
     (is (= 43 (s :id))) ; make sure an explicit default overwrites on append
     (is (= 5  (t :id))) ; make sure a missing default doesn't overwrite on append
     (is (= "rad" (s :label)))
@@ -206,7 +207,7 @@
                                     "G" {:bar 7}
                                     "H" {:bar 8 :exists true}
                                     "I" {:bar 9 :exists false}})
-          r (protobuf/parse Maps (util/catbytes (protobuf/->bytes p) (protobuf/->bytes q)))]
+          r (protobuf/parse Maps (util/catbytes (protobuf-map/->bytes p) (protobuf-map/->bytes q)))]
       (are [key vals] (= vals (map (get-in r [map-key key])
                                    [:foo :bar :exists]))
            "A" [1   1 nil  ]
@@ -239,7 +240,7 @@
                                     "G" {:bar 7}
                                     "H" {:bar 8 :deleted true}
                                     "I" {:bar 9 :deleted false}})
-          r (protobuf/parse Maps (util/catbytes (protobuf/->bytes p) (protobuf/->bytes q)))]
+          r (protobuf/parse Maps (util/catbytes (protobuf-map/->bytes p) (protobuf-map/->bytes q)))]
       (are [key vals] (= vals (map (get-in r [map-key key])
                                    [:foo :bar :deleted]))
            "A" [1   1 nil  ]
@@ -312,7 +313,7 @@
                 {:key "bar", :i 99}
                 {:key "foo", :i -8, :d 4.06}
                 {:key "bar", :i -66}]
-               (protobuf/get-raw p :counts)))))))
+               (protobuf-map/get-raw p :counts)))))))
 
 (deftest test-succession
   (let [p (protobuf/create Foo :time {:year 1978 :month 11 :day 24})]
@@ -324,7 +325,7 @@
       (is (= 1    (get-in p [:time :month])))
       (is (= nil  (get-in p [:time :day])))
       (is (= [{:year 1978, :month 11, :day 24} {:year 1974, :month 1}]
-             (protobuf/get-raw p :time))))))
+             (protobuf-map/get-raw p :time))))))
 
 (deftest test-nullable
   (let [p (protobuf/create Bar :int 1 :long 330000000000 :flt 1.23 :dbl 9.87654321 :str "foo" :enu :a)
@@ -349,13 +350,13 @@
         (is (= "foo" (get p :label)))
         (let [p (util/combine p {:label nil})]
           (is (= nil        (get     p :label)))
-          (is (= ["foo" ""] (protobuf/get-raw p :label))))))
+          (is (= ["foo" ""] (protobuf-map/get-raw p :label))))))
     (testing "repeated nullable"
       (let [p (protobuf/create Bar :labels ["foo" "bar"])]
         (is (= ["foo" "bar"] (get p :labels)))
         (let [p (util/combine p {:labels [nil]})]
           (is (= ["foo" "bar" nil] (get     p :labels)))
-          (is (= ["foo" "bar" ""]  (protobuf/get-raw p :labels))))))))
+          (is (= ["foo" "bar" ""]  (protobuf-map/get-raw p :labels))))))))
 
 (deftest test-mapdef->schema
   (let [fields
