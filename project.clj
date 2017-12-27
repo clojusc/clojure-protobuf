@@ -13,12 +13,12 @@
     [org.flatland/io "0.3.0"]]
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
+  :jvm-opts ["-Dprotobuf.impl=flatland"]
   :profiles {
     :ubercompile {
       :aot :all}
-    :dev {
-      :source-paths ["dev-resources/src"]}
     :custom-repl {
+      :source-paths ["dev-resources/src"]
       :repl-options {
         :init-ns protobuf.dev
         :prompt ~#(str "\u001B[35m[\u001B[34m"
