@@ -254,9 +254,10 @@ nil
 Then we'll import the generated Java classes we want to use:
 
 ```clj
-[protobuf.dev] λ=> (import '(protobuf.examples.tutorial AddressBookProtos$Person
-                                                        AddressBookProtos$Person$PhoneNumber
-                                                        AddressBookProtos$AddressBook))
+[protobuf.dev] λ=> (import '(protobuf.examples.tutorial
+                             AddressBookProtos$Person
+                             AddressBookProtos$Person$PhoneNumber
+                             AddressBookProtos$AddressBook))
 protobuf.examples.tutorial.AddressBookProtos$AddressBook
 ```
 
@@ -301,42 +302,79 @@ not converted to Clojure data. For current status on this issue, see:
 <a href="https://github.com/clojusc/protobuf/issues/22">https://github.com/clojusc/protobuf/issues/22</a>
 </blockquote>
 
-## Message Functions
 
-TBD
+## The `ProtoBufAPI`
 
-## Parsing and Serialization
+The following methods all take an instance of `protobuf.core.ProtoBufAPI` as
+their first argument. An example implementation is
+`protobuf.impl.flatland.core.FlatlandProtoBuf`.
 
-* `protobuf/parse` - Given an array or stream of bytes, we can parse these
-  to a Clojure protobuf data structure
-* `protobuf/->bytes` - Given a Java protobuf wrapper, we can convert this to
-  an array of raw bytes
+Note that the constructor is not a method, and as such, does not take a
+`ProtoBufAPI` instance as its first arguement.
+
+### Instantiation
+
+* `protobuf/create` - Takes a compiled protocol buffer class, as created by the
+  `protoc` compiler, as well as the data (fields) to use in creating the
+  protocol buffer message for the class. Returns a `protobuf.core.ProtoBufAPI`
+  implementation
+
+### Serialization and Deserialization
+
+* `protobuf/->bytes` - Given an instance of a Clojure ProtoBuf, convert its message to
+   an array of raw bytes; this is the serialization method.
+* `protobuf/bytes->` - Given an array or stream of bytes, convert it
+  to a Clojure ProtoBuf instance; this is the deserialization method.
+
+### Reading and Writing
+
+* `protobuf/read` - Given an instance of a Clojure ProtoBuf and an input
+  object (anthying that can be coerced to a `InputStream`), read from the input
+  and return a Clojure ProtoBuf.
+* `protobuf/write` - Given an instance of a Clojure ProtoBuf and an output
+  object (anthying that can be coerced to a `OutputStream`), write the
+  serialized bytes of the instance to the output.
+
+### Inspection
+
+* `protobuf/->schema` - Given an instance of a Clojure ProtoBuf, return the
+  data for its protocol buffer schema.
 
 
-## Creating Messages
+## Example Usage
 
-The once you have the wrapped objects, the `create` function can generate the
-appropriate protocol buffer message. Here's how to create some `PhoneNumber`
-messages:
+### Creating Messages
+
+The `create` function generates the appropriate protocol buffer message.
+We'll use that now to create a list of `PhoneNumber` messages:
 
 ```clj
 [protobuf.dev] λ=> (def phones [(protobuf/create AddressBookProtos$Person$PhoneNumber
-                                                 :number "555-1212" :type "HOME")
+                                                 {:number "555-1212" :type :home})
                                 (protobuf/create AddressBookProtos$Person$PhoneNumber
-                                                 :number "555-1213" :type "MOBILE")
+                                                 {:number "555-1213" :type :mobile})
                                 (protobuf/create AddressBookProtos$Person$PhoneNumber
-                                                 :number "555-1214" :type "WORK")])
+                                                 {:number "555-1214" :type :work})])
 #'protobuf.dev/phones
 ```
+
+<blockquote>
+Note that currently only lower-case enum values are supported by Clojure
+protobuf; if you create `.proto` files with enum fields whose values contain
+any capital letters, your code will be unstable and likely eventually break.
+
+For current status on this issue, see
+<a href="https://github.com/clojusc/protobuf/issues/25">https://github.com/clojusc/protobuf/issues/25</a>
+</blockquote>
 
 Now we can use these when creating our `Person` message:
 
 ```clj
 [protobuf.dev] λ=> (def alice (protobuf/create AddressBookProtos$Person
-                                               :id 108
-                                               :name "Alice"
-                                               :email "alice@example.com"
-                                               :phones phones))
+                                               {:id 108
+                                                :name "Alice"
+                                                :email "alice@example.com"
+                                                :phones phones}))
 #'protobuf.dev/alice
 ```
 
@@ -344,7 +382,7 @@ And then that can be used when creating (or updating) an `AddressBook` message:
 
 ```clj
 [protobuf.dev] λ=> (def addresses (protobuf/create AddressBookProtos$AddressBook
-                                                   :people [alice]))
+                                                   {:people [alice]}))
 #'protobuf.dev/addresses
 ```
 
@@ -364,12 +402,12 @@ nil
 ```
 
 
-## Writing a Messages
+### Writing a Messages
 
 These can then be written to an output stream:
 
 ```clj
-[protobuf.dev] λ=> (protobuf/write "/tmp/address-book.db" addresses)
+[protobuf.dev] λ=> (protobuf/write addresses "/tmp/address-book.db")
 nil
 ```
 
@@ -381,21 +419,14 @@ Take a look at the contents of `/tmp/address-book.db` to convince yourself the
 the data was actually written there. Then, we'll try reading it back in ...
 
 
-## Reading a Message
+### Reading a Message
 
 Reading stored protobuf data is just as easy as writing it:
 
 ```clj
-[protobuf.dev] λ=> (def address-book (protobuf/read AddressBook "/tmp/address-book.db"))
+[protobuf.dev] λ=> (def address-book (protobuf/read addresses "/tmp/address-book.db"))
 #'protobuf.dev/address-book
-```
-
-Now, keep in mind that the read operation produces a lazy sequence, so if
-we're to compare the `addresses` data with the new `address-book` data, we need
-to realize the latter, e.g.:
-
-```clj
-[protobuf.dev] λ=> (= addresses (into {} address-book))
+[protobuf.dev] λ=> (= addresses address-book)
 true
 ```
 

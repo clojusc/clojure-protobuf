@@ -54,21 +54,20 @@ Now we can create a protobuf:
                              :name "Alice"
                              :email "alice@example.com"}))
 #'protobuf.dev/p
-[protobuf.dev] λ=> (:instance p)
+[protobuf.dev] λ=> p
 {:id 108, :name "Alice", :email "alice@example.com"}
 ```
 
 With our person data in place, we can now do the usual Clojure operations:
 
 ```clj
-[protobuf.dev] λ=> (-> p
-                       (assoc-in [:instance :name] "Alice B. Carol")
-                       :instance)
+[protobuf.dev] λ=> (assoc p :name "Alice B. Carol")
 {:id 108, :name "Alice B. Carol", :email "alice@example.com"}
-[protobuf.dev] λ=> (-> p
-                       (assoc-in [:instance :likes] ["climbing" "running" "jumping"])
-                       :instance)
-{:id 108, :name "Alice", :email "alice@example.com", :likes ["climbing" "running" "jumping"]}
+[protobuf.dev] λ=> (assoc p :likes ["climbing" "running" "jumping"])
+{:id 108,
+ :name "Alice",
+ :email "alice@example.com",
+ :likes ["climbing" "running" "jumping"]}
 ```
 
 Additionally, converting between protobuf bytes and Clojure data is trivial:
@@ -78,8 +77,6 @@ Additionally, converting between protobuf bytes and Clojure data is trivial:
 #'protobuf.dev/b
 [protobuf.dev] λ=> b
 #object["[B" 0x7e3a40eb "[B@7e3a40eb"]
-[protobuf.dev] λ=> (-> p
-                      (protobuf/bytes-> b)
-                      :instance)
+[protobuf.dev] λ=> (protobuf/bytes-> p b)
 {:id 108, :name "Alice", :email "alice@example.com"}
 ```

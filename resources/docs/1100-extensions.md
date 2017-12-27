@@ -54,10 +54,6 @@ protobuf.examples.photo.Example$Photo$Tag
 Create our protobuf:
 
 ```clj
-[protobuf.dev] λ=> (def Photo (protobuf/mapdef Example$Photo))
-#'protobuf.dev/Photo
-[protobuf.dev] λ=> (def Tag (protobuf/mapdef Example$Photo$Tag))
-#'protobuf.dev/Tag
 [protobuf.dev] λ=> (def p (protobuf/create
                             Example$Photo
                             {:id 7
@@ -70,7 +66,7 @@ Create our protobuf:
                                         :width 25
                                         :height 27}}}))
 #'protobuf.dev/p
-[protobuf.dev] λ=> (:instance p)
+[protobuf.dev] λ=> p
 {:id 7,
  :path "/photos/h2k3j4h9h23",
  :labels #{"family" "hawaii" "surfing"},
@@ -86,7 +82,7 @@ Convert to and from bytes:
 #'protobuf.dev/b
 [protobuf.dev] λ=> b
 #object["[B" 0x4455bb6e "[B@4455bb6e"]
-[protobuf.dev] λ=> (:instance (protobuf/bytes-> p b))
+[protobuf.dev] λ=> (protobuf/bytes-> p b)
 {:id 7,
  :path "/photos/h2k3j4h9h23",
  :labels #{"family" "hawaii" "surfing"},
@@ -98,14 +94,28 @@ Convert to and from bytes:
 Get the schema for a protobuf (or extract a part of it):
 
 ```clj
-[protobuf.dev] λ=> (protobuf/mapdef->schema Tag)
- :name "protobuf.examples.photo.Photo.Tag",
+[protobuf.dev] λ=> (protobuf/->schema p)
+{:type :struct,
+ :name "protobuf.examples.photo.Photo",
  :fields
- {:person-id {:type :int},
-  :x-coord {:type :int, :max 100.0, :min -100.0},
-  :y-coord {:type :int},
-  :width {:type :int},
-  :height {:type :int}}}
-[protobuf.dev] λ=> (get-in (protobuf/mapdef->schema Tag) [:fields :x-coord])
+ {:id {:type :int},
+  :path {:type :string},
+  :labels {:type :set, :values {:type :string}},
+  :attrs {:type :map, :keys {:type :string}, :values {:type :string}},
+  :tags
+  {:type :map,
+   :keys {:type :int},
+   :values
+   {:type :struct,
+    :name "protobuf.examples.photo.Photo.Tag",
+    :fields
+    {:person-id {:type :int},
+     :x-coord {:type :int, :max 100.0, :min -100.0},
+     :y-coord {:type :int},
+     :width {:type :int},
+     :height {:type :int}}}},
+  :image {:type :byte_string}}}
+[protobuf.dev] λ=> (get-in (protobuf/->schema p)
+                           [:fields :tags :values :fields :x-coord])
 {:type :int, :max 100.0, :min -100.0}
 ```

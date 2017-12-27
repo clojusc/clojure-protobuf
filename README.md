@@ -64,30 +64,30 @@ Now you can use the protocol buffer in Clojure:
 (import (your.namespace.person Example$Person)
 
 (def alice (protobuf/create Example$Person
-                            {:id 4 :name "Alice" :email "alice@example.com"}))
+                            {:id 108
+                             :name "Alice"
+                             :email "alice@example.com"}))
 ```
 
 Makes some changes to the data and serialize to bytes:
 
 ```clj
 (def b (-> alice
-           (assoc-in [:instance :name] "Alice B. Carol")
-           (assoc-in [:instance :likes] ["climbing" "running" "jumping"])
+           (assoc :name "Alice B. Carol")
+           (assoc :likes ["climbing" "running" "jumping"])
            (protobuf/->bytes)))
 ```
 
 Round-trip the bytes back to a probuf object:
 
 ```clj
-(->> b
-     (protobuf/bytes-> alice)
-     :instance)
+(protobuf/bytes-> alice b)
 ```
 
 Which gives us:
 
 ```clj
-{:id 4,
+{:id 108,
  :name "Alice B. Carol",
  :email "alice@example.com",
  :likes ["climbing" "running" "jumping"]}
