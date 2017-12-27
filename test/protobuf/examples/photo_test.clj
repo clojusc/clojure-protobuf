@@ -1,7 +1,7 @@
 (ns protobuf.examples.photo-test
   (:require
     [clojure.test :refer :all]
-    [protobuf.impl.flatland.mapdef :as protobuf])
+    [protobuf.core :as protobuf])
   (:import
     (com.google.protobuf ByteString)
     (protobuf.examples.photo Example$Photo)))
