@@ -103,11 +103,6 @@
   (protobuf/mapdef->schema
    (protobuf/mapdef protobuf-class)))
 
-(defn schema
-  [protobuf-class]
-  (protobuf/mapdef->schema
-   (protobuf/mapdef protobuf-class)))
-
 (def behaviour
   {:->bytes (fn [this]
              (protobuf-map/->bytes (common/get-instance this)))
