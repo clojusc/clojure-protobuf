@@ -66,7 +66,7 @@ Create our protobuf:
                                         :width 25
                                         :height 27}}}))
 #'protobuf.dev/p
-[protobuf.dev] λ=> (:instance p)
+[protobuf.dev] λ=> p
 {:id 7,
  :path "/photos/h2k3j4h9h23",
  :labels #{"family" "hawaii" "surfing"},

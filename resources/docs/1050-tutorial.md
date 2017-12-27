@@ -373,10 +373,10 @@ Now we can use these when creating our `Person` message:
 
 ```clj
 [protobuf.dev] λ=> (def alice (protobuf/create AddressBookProtos$Person
-                                               :id 108
-                                               :name "Alice"
-                                               :email "alice@example.com"
-                                               :phones phones))
+                                               {:id 108
+                                                :name "Alice"
+                                                :email "alice@example.com"
+                                                :phones phones}))
 #'protobuf.dev/alice
 ```
 
