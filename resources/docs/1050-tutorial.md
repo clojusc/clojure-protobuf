@@ -261,8 +261,11 @@ Then we'll import the generated Java classes we want to use:
 protobuf.examples.tutorial.AddressBookProtos$AddressBook
 ```
 
-Note that for nested inner classes, we simply use the inner class separator
-`$` of Clojure's Java inter-op.
+Note that for nested inner classes, we simply keep using the inner class
+separator `$` of Clojure's Java inter-op.
+
+
+We can view the full, nested data schema in Clojure data:
 
 ```clj
 [protobuf.dev] λ=> (pprint (protobuf/schema AddressBookProtos$AddressBook))
@@ -370,9 +373,10 @@ Now we can use these when creating our `Person` message:
 
 ```clj
 [protobuf.dev] λ=> (def alice (protobuf/create AddressBookProtos$Person
-                                               {:id 108
-                                                :name "Alice"
-                                                :email "alice@example.com"
+                                               :id 108
+                                               :name "Alice"
+                                               :email "alice@example.com"
+                                               :phones phones))
 #'protobuf.dev/alice
 ```
 
