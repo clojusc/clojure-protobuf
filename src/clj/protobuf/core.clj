@@ -15,9 +15,18 @@
         ProtoBufAPI
         flatland/behaviour)
 
+(def default-impl-name "flatland")
+
 (defn get-impl
   []
-  (keyword (System/getProperty "protobuf.impl")))
+  (keyword (or (System/getProperty "protobuf.impl")
+               default-impl-name)))
+
+(defn schema
+  [protobuf-class]
+  (let [impls {:flatland flatland/schema}
+        impl (get-impl)]
+    ((impl impls) protobuf-class)))
 
 (defn create
   [protobuf-class data]
