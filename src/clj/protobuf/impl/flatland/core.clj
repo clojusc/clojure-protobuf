@@ -20,6 +20,11 @@
        :java-wrapper wrapper
        :instance (protobuf/create wrapper data)})))
 
+(defn schema
+  [protobuf-class]
+  (protobuf/mapdef->schema
+   (protobuf/mapdef protobuf-class)))
+
 (def behaviour
   {:->bytes (fn [this]
              (protobuf-map/->bytes (:instance this)))
