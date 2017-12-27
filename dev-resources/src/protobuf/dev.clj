@@ -11,6 +11,10 @@
   (:import
     (protobuf.examples.person Example$Person)
     (protobuf.examples.photo Example$Photo)
+    (protobuf.examples.tutorial AddressBookProtos$Person
+                                AddressBookProtos$Person$PhoneNumber
+                                AddressBookProtos$AddressBook)
+    (protobuf.impl.flatland.core FlatlandProtoBuf)
     (protobuf.testing Codec$Foo)))
 
 (defn show-methods

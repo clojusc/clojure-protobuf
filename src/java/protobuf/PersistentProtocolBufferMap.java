@@ -520,7 +520,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
         Descriptors.EnumValueDescriptor enum_value = enum_type.findValueByNumber((Integer)value);
         if (enum_value == null) {
           PrintWriter err = (PrintWriter)RT.ERR.deref();
-          err.format("invalid enum number %s for enum type %s\n", value, enum_type.getFullName());
+          err.format("ERROR: Invalid enum number %s for enum type %s\n", value, enum_type.getFullName());
         }
         return enum_value;
       }
@@ -541,7 +541,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
         Descriptors.EnumValueDescriptor enum_value = enum_type.findValueByName(name);
         if (enum_value == null) {
           PrintWriter err = (PrintWriter)RT.ERR.deref();
-          err.format("invalid enum value %s for enum type %s\n", name, enum_type.getFullName());
+          err.format("ERROR: Invalid enum value %s for enum type %s\n", name, enum_type.getFullName());
         }
         return enum_value;
       case MESSAGE:

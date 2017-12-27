@@ -14,6 +14,7 @@
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
   :jvm-opts ["-Dprotobuf.impl=flatland"]
+  :aot [protobuf.impl.flatland.core]
   :profiles {
     :ubercompile {
       :aot :all}
