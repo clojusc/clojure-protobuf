@@ -263,21 +263,11 @@ protobuf.examples.tutorial.AddressBookProtos$AddressBook
 Note that for nested inner classes, we simply keep using the inner class
 separator `$` of Clojure's Java inter-op.
 
-Next we'll use a Java wrapper that let's us treat these like maps:
-
-```clj
-[protobuf.dev] λ=> (def Person (protobuf/mapdef AddressBookProtos$Person))
-#'protobuf.dev/Person
-[protobuf.dev] λ=> (def PhoneNumber (protobuf/mapdef AddressBookProtos$Person$PhoneNumber))
-#'protobuf.dev/PhoneNumber
-[protobuf.dev] λ=> (def AddressBook (protobuf/mapdef AddressBookProtos$AddressBook))
-#'protobuf.dev/AddressBook
-```
 
 We can view the full, nested data schema in Clojure data:
 
 ```clj
-[protobuf.dev] λ=> (pprint (protobuf/mapdef->schema AddressBook))
+[protobuf.dev] λ=> (pprint (protobuf/schema AddressBookProtos$AddressBook))
 {:type :struct,
  :name "tutorial.AddressBook",
  :fields
@@ -330,16 +320,19 @@ appropriate protocol buffer message. Here's how to create some `PhoneNumber`
 messages:
 
 ```clj
-[protobuf.dev] λ=> (def phones [(protobuf/create PhoneNumber :number "555-1212" :type "HOME")
-                                (protobuf/create PhoneNumber :number "555-1213" :type "MOBILE")
-                                (protobuf/create PhoneNumber :number "555-1214" :type "WORK")])
+[protobuf.dev] λ=> (def phones [(protobuf/create AddressBookProtos$Person$PhoneNumber
+                                                 :number "555-1212" :type "HOME")
+                                (protobuf/create AddressBookProtos$Person$PhoneNumber
+                                                 :number "555-1213" :type "MOBILE")
+                                (protobuf/create AddressBookProtos$Person$PhoneNumber
+                                                 :number "555-1214" :type "WORK")])
 #'protobuf.dev/phones
 ```
 
 Now we can use these when creating our `Person` message:
 
 ```clj
-[protobuf.dev] λ=> (def alice (protobuf/create Person
+[protobuf.dev] λ=> (def alice (protobuf/create AddressBookProtos$Person
                                                :id 108
                                                :name "Alice"
                                                :email "alice@example.com"
@@ -350,7 +343,8 @@ Now we can use these when creating our `Person` message:
 And then that can be used when creating (or updating) an `AddressBook` message:
 
 ```clj
-[protobuf.dev] λ=> (def addresses (protobuf/create AddressBook :people [alice]))
+[protobuf.dev] λ=> (def addresses (protobuf/create AddressBookProtos$AddressBook
+                                                   :people [alice]))
 #'protobuf.dev/addresses
 ```
 

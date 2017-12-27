@@ -45,34 +45,30 @@ nil
 protobuf.examples.person.Example$Person
 ```
 
-Now we can create the Java wrapper for our protocol (see
-`protobuf.PersistentProtocolBufferMap` for more details):
-
-```clj
-[protobuf.dev] λ=> (def Person (protobuf/mapdef Example$Person))
-#'protobuf.dev/Person
-```
-
-And with this in hand, we can finally create an instance of the protobuf:
+Now we can create a protobuf:
 
 ```clj
 [protobuf.dev] λ=> (def p (protobuf/create
-                            Person
-                            :id 4
-                            :name "Alice"
-                            :email "alice@example.com"))
+                            Example$Person
+                            {:id 108
+                             :name "Alice"
+                             :email "alice@example.com"}))
 #'protobuf.dev/p
-[protobuf.dev] λ=> p
-{:id 4, :name "Alice", :email "alice@example.com"}
+[protobuf.dev] λ=> (:instance p)
+{:id 108, :name "Alice", :email "alice@example.com"}
 ```
 
 With our person data in place, we can now do the usual Clojure operations:
 
 ```clj
-[protobuf.dev] λ=> (assoc p :name "Alice B. Carol")
-{:id 4, :name "Alice B. Carol", :email "alice@example.com"}
-[protobuf.dev] λ=> (assoc p :likes ["climbing" "running" "jumping"])
-{:id 4, :name "Alice", :email "alice@example.com", :likes ["climbing" "running" "jumping"]}
+[protobuf.dev] λ=> (-> p
+                       (assoc-in [:instance :name] "Alice B. Carol")
+                       :instance)
+{:id 108, :name "Alice B. Carol", :email "alice@example.com"}
+[protobuf.dev] λ=> (-> p
+                       (assoc-in [:instance :likes] ["climbing" "running" "jumping"])
+                       :instance)
+{:id 108, :name "Alice", :email "alice@example.com", :likes ["climbing" "running" "jumping"]}
 ```
 
 Additionally, converting between protobuf bytes and Clojure data is trivial:
@@ -82,6 +78,8 @@ Additionally, converting between protobuf bytes and Clojure data is trivial:
 #'protobuf.dev/b
 [protobuf.dev] λ=> b
 #object["[B" 0x7e3a40eb "[B@7e3a40eb"]
-[protobuf.dev] λ=> (protobuf/parse Person b)
-{:id 4, :name "Alice", :email "alice@example.com"}
+[protobuf.dev] λ=> (-> p
+                      (protobuf/bytes-> b)
+                      :instance)
+{:id 108, :name "Alice", :email "alice@example.com"}
 ```

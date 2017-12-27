@@ -59,14 +59,18 @@ Create our protobuf:
 [protobuf.dev] λ=> (def Tag (protobuf/mapdef Example$Photo$Tag))
 #'protobuf.dev/Tag
 [protobuf.dev] λ=> (def p (protobuf/create
-                            Photo
-                            :id 7
-                            :path "/photos/h2k3j4h9h23"
-                            :labels #{"hawaii" "family" "surfing"}
-                            :attrs {"dimensions" "1632x1224", "alpha" "no", "color space" "RGB"}
-                            :tags  {4 {:person_id 4, :x_coord 607, :y_coord 813, :width 25, :height 27}}))
+                            Example$Photo
+                            {:id 7
+                             :path "/photos/h2k3j4h9h23"
+                             :labels #{"hawaii" "family" "surfing"}
+                             :attrs {"dimensions" "1632x1224", "alpha" "no", "color space" "RGB"}
+                             :tags  {4 {:person_id 4
+                                        :x_coord 607
+                                        :y_coord 813
+                                        :width 25
+                                        :height 27}}}))
 #'protobuf.dev/p
-[protobuf.dev] λ=> p
+[protobuf.dev] λ=> (:instance p)
 {:id 7,
  :path "/photos/h2k3j4h9h23",
  :labels #{"family" "hawaii" "surfing"},
@@ -82,7 +86,7 @@ Convert to and from bytes:
 #'protobuf.dev/b
 [protobuf.dev] λ=> b
 #object["[B" 0x4455bb6e "[B@4455bb6e"]
-[protobuf.dev] λ=> (protobuf/parse Photo b)
+[protobuf.dev] λ=> (:instance (protobuf/bytes-> p b))
 {:id 7,
  :path "/photos/h2k3j4h9h23",
  :labels #{"family" "hawaii" "surfing"},

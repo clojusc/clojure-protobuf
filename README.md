@@ -63,27 +63,45 @@ Now you can use the protocol buffer in Clojure:
 (require '[protobuf.core :as protobuf])
 (import (your.namespace.person Example$Person)
 
-(def Person (protobuf/mapdef Example$Person))
-
-(def p (protobuf/create Person :id 4 :name "Alice" :email "alice@example.com"))
-=> {:id 4, :name "Alice", :email "alice@example.com"}
-
-(assoc p :name "Alice B. Carol")
-=> {:id 4, :name "Alice B. Carol", :email "alice@example.com"}
-
-(assoc p :likes ["climbing" "running" "jumping"])
-=> {:id 4, name "Alice", :email "alice@example.com", :likes ["climbing" "running" "jumping"]}
-
-(def b (protobuf/->bytes p))
-=> #<byte[] [B@7cbe41ec>
-
-(protobuf/parse Person b)
-=> {:id 4, :name "Alice", :email "alice@example.com"}
+(def alice (protobuf/create Example$Person
+                            {:id 4 :name "Alice" :email "alice@example.com"}))
 ```
 
-A protocol buffer map is immutable just like other clojure objects. It is
-similar to a struct-map, except you cannot insert fields that aren't specified
-in the `.proto` file.
+Makes some changes to the data and serialize to bytes:
+
+```clj
+(def b (-> alice
+           (assoc-in [:instance :name] "Alice B. Carol")
+           (assoc-in [:instance :likes] ["climbing" "running" "jumping"])
+           (protobuf/->bytes)))
+```
+
+Round-trip the bytes back to a probuf object:
+
+```clj
+(->> b
+     (protobuf/bytes-> alice)
+     :instance)
+```
+
+Which gives us:
+
+```clj
+{:id 4,
+ :name "Alice B. Carol",
+ :email "alice@example.com",
+ :likes ["climbing" "running" "jumping"]}
+```
+
+The data stored in the `:instance` key is a protocol buffer map and is
+immutable just like other clojure objects. It is similar to a struct-map,
+except that you cannot insert fields that aren't specified in the `.proto`
+file.
+
+(For instance, if you do a round trip with the data like we did above, but use
+`:dislikes` -- not in the protobuf definition -- instead of `:likes`,
+converting from bytes back to the protobuf instance will result in the
+`:dislikes` key and associated value being dropped.)
 
 
 ## Documentation
