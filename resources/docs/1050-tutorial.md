@@ -31,7 +31,7 @@ Additionally, you may find these useful:
 ## Why Use Protocol Buffers?
 
 Protocol buffers solve the problem of efficiently serializing and
-deserializing structured data in a language-agnostic manner, accessible a vast
+deserializing structured data in a language-agnostic manner, accessible to a vast
 array of applications (as long as the applications are written in a language
 that has a protobuf library). We'll illustrate this with an example.
 
@@ -84,9 +84,9 @@ message Person {
   optional string email = 3;
 
   enum PhoneType {
-    MOBILE = 0;
-    HOME = 1;
-    WORK = 2;
+    mobile = 0;
+    home = 1;
+    work = 2;
   }
 
   message PhoneNumber {
@@ -227,9 +227,10 @@ For example, this is what the Clojure protobuf project has set, using the
 ```
 
 <blockquote>
-Fore convenience, the Clojure protobuf project always compiles the examples
-and the tests before starting up the REPL, so they are always freshly available
-to developers.
+Fore convenience, the Clojure protobuf project itself always compiles the
+examples and the tests before starting up the REPL, so they are always freshly
+available to the project contributors. You can do the same thing in your own
+Clojure projects.
 </blockquote>
 
 
@@ -261,8 +262,8 @@ Then we'll import the generated Java classes we want to use:
 protobuf.examples.tutorial.AddressBookProtos$AddressBook
 ```
 
-Note that for nested inner classes, we simply keep using the inner class
-separator `$` of Clojure's Java inter-op.
+Note that for nested inner classes, we simply use the inner class separator
+`$` of Clojure's Java inter-op.
 
 
 We can view the full, nested data schema in Clojure data:
@@ -298,7 +299,9 @@ nil
 
 <blockquote>
 There's currently a bug/missing feature where the default value of an `enum` is
-not converted to Clojure data. For current status on this issue, see:
+not converted to Clojure data.
+
+For current status on this issue, see:
 <a href="https://github.com/clojusc/protobuf/issues/22">https://github.com/clojusc/protobuf/issues/22</a>
 </blockquote>
 
@@ -402,7 +405,7 @@ nil
 ```
 
 
-### Writing a Messages
+### Writing a Message
 
 These can then be written to an output stream:
 
@@ -411,11 +414,11 @@ These can then be written to an output stream:
 nil
 ```
 
-Note that the first argument doesn't have to be a string representing a file
+Note that the second argument doesn't have to be a string representing a file
 name; it can be anything which `clojure.java.io/output-stream` can coerce to a
 stream (e.g., `OutputStream`, `File`, `URI`, `URL`, `Socket`, or `String`).
 
-Take a look at the contents of `/tmp/address-book.db` to convince yourself the
+Take a look at the contents of `/tmp/address-book.db` to convince yourself that
 the data was actually written there. Then, we'll try reading it back in ...
 
 
@@ -428,6 +431,29 @@ Reading stored protobuf data is just as easy as writing it:
 #'protobuf.dev/address-book
 [protobuf.dev] λ=> (= addresses address-book)
 true
+```
+
+It may seem a bit awkward to have need an instance already in order to read
+data to _create_ an instance, but the instance is what holds the underlying
+Java class, which is needed for the read operation. It's not that bad,
+really -- you can create an empty instance and use that for a `read`, for
+example:
+
+```clj
+[protobuf.dev] λ=> (def address-book (protobuf/read
+                                      (protobuf/create AddressBookProtos$AddressBook)
+                                                       "/tmp/address-book.db"))
+#'protobuf.dev/address-book
+[protobuf.dev] λ=> (pprint address-book)
+{:people
+ [{:name "Alice",
+   :id 108,
+   :email "alice@example.com",
+   :phones
+   [{:number "555-1212", :type :home}
+    {:number "555-1213", :type :mobile}
+    {:number "555-1214", :type :work}]}]}
+nil
 ```
 
 
@@ -457,6 +483,9 @@ default value is zero. Note also that if you added a new repeated field, your
 new code will not be able to tell whether it was left empty (by new code) or
 never set at all (by old code).
 
+Be sure to see our docs on [Extension usage][extension-usage] for Clojure
+protobuf.
+
 
 ## Advanced Usage
 
@@ -485,3 +514,4 @@ you might initially expect!
 [java-generated]: https://developers.google.com/protocol-buffers/docs/reference/java-generated
 [enc-ref]: https://developers.google.com/protocol-buffers/docs/encoding
 [download]: https://developers.google.com/protocol-buffers/docs/downloads.html
+[extension-usage]: 1100-extensions.html

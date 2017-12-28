@@ -107,7 +107,14 @@ converting from bytes back to the protobuf instance will result in the
 
 The above usage is a quick taste; for more examples as well as the current and
 previous reference documentation, visit the
-[Clojure protobuf documentation][docs].
+[Clojure protobuf documentation][docs]. These docs include the following:
+
+* Basic usage example
+* A Clojure port of Google's Java protobuf tutorial
+* An example for working with extensions
+* Clojure protobuf API Reference
+* Marginalia docs
+* Documentation for the two Java classes (see the "javadoc" link there)
 
 
 <!-- Named page links below: /-->

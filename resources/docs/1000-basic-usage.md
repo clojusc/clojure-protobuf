@@ -58,7 +58,7 @@ Now we can create a protobuf:
 {:id 108, :name "Alice", :email "alice@example.com"}
 ```
 
-With our person data in place, we can now do the usual Clojure operations:
+The protocol buffer instance supports the usual Clojure operations:
 
 ```clj
 [protobuf.dev] λ=> (assoc p :name "Alice B. Carol")
