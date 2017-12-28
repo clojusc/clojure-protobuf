@@ -35,7 +35,7 @@ protobuf.examples.person.Example$Person
 [protobuf.dev] λ=&gt; p
 {:id 108, :name "Alice", :email "alice@example.com"}
 </code></pre>
-<p>With our person data in place, we can now do the usual Clojure operations:</p>
+<p>The protocol buffer instance supports the usual Clojure operations:</p>
 <pre><code class="clj">[protobuf.dev] λ=&gt; (assoc p :name "Alice B. Carol")
 {:id 108, :name "Alice B. Carol", :email "alice@example.com"}
 [protobuf.dev] λ=&gt; (assoc p :likes ["climbing" "running" "jumping"])

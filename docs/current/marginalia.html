@@ -2866,434 +2866,7 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>Clojure Protocol Buffer Library -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/clojusc/protobuf">Clojure Protocol Buffer Library</a></h1><h2 class="project-version">3.5.1-v1.1-SNAPSHOT</h2><br /><p>A Clojure interface to Google's protocol buffers</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">com.google.protobuf/protobuf-java</td><td class="dotted"><hr /></td><td class="dep-version">3.5.1</td></tr><tr><td class="dep-name">gloss</td><td class="dotted"><hr /></td><td class="dep-version">0.2.6</td></tr><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.8.0</td></tr><tr><td class="dep-name">org.flatland/io</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#protobuf.common">protobuf.common</a></li><li><a href="#protobuf.core">protobuf.core</a></li><li><a href="#protobuf.impl.flatland.codec">protobuf.impl.flatland.codec</a></li><li><a href="#protobuf.impl.flatland.core">protobuf.impl.flatland.core</a></li><li><a href="#protobuf.impl.flatland.map">protobuf.impl.flatland.map</a></li><li><a href="#protobuf.impl.flatland.mapdef">protobuf.impl.flatland.mapdef</a></li><li><a href="#protobuf.impl.flatland.schema">protobuf.impl.flatland.schema</a></li><li><a href="#protobuf.util">protobuf.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.common" name="protobuf.common"><h1 class="project-name">protobuf.common</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns protobuf.common)</pre></td></tr><tr><td class="docs"><p>  Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn get-class
-  [this]
-  (:protobuf-class (.contents this)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn get-instance
-  [this]
-  (:instance (.contents this)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn get-wrapper
-  [this]
-  (:java-wrapper (.contents this)))</pre></td></tr><tr><td class="docs"><p>  Behaviours   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def associative-behaviour
-  {:containsKey (fn [this data] (.containsKey (get-instance this) data))
-   :entryAt (fn [this data] (.entryAt (get-instance this) data))})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def iterable-behaviour
-  {:forEach (fn [this consumer] (.forEach (get-instance this) consumer))
-   :iterator (fn [this] (.iterator (get-instance this)))
-   :spliterator (fn [this] (.spliterator (get-instance this)))})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def lookup-behaviour
-  {:valAt (fn ([this k] (.valAt (get-instance this) k))
-              ([this k fallback] (.valAt (get-instance this) k fallback)))})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def persistent-collection-behaviour
-  {:cons (fn [this o] (.cons (get-instance this) o))
-   :count (fn [this] (.count (get-instance this)))
-   :empty (fn [this] (.empty (get-instance this)))
-   :equiv (fn [this o]
-           (and (= (get-class this) (get-class o))
-                (.equiv (get-instance this) (get-instance o))))})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def persistent-map-behaviour
-  {:assoc (fn [this k v] (.assoc (get-instance this) k v))
-   :without (fn [this k] (.without (get-instance this) k))})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def printable-behaviour
-  {:toString (fn [this] (.toString (get-instance this)))})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def seqable-behaviour
-  {:seq (fn [this] (.seq (get-instance this)))})</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.core" name="protobuf.core"><h1 class="project-name">protobuf.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>This is the public API for working with protocol buffers.</p>
-</td><td class="codes"><pre class="brush: clojure">(ns protobuf.core
-  (:require
-    [protobuf.impl.flatland.core :as flatland])
-  (:import
-    (protobuf.impl.flatland.core FlatlandProtoBuf))
-  (:refer-clojure :exclude [map? read]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defprotocol ProtoBufAPI
-  (-&gt;bytes [this])
-  (-&gt;schema [this])
-  (bytes-&gt; [this bytes])
-  (read [this in])
-  (write [this out]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(extend FlatlandProtoBuf
-        ProtoBufAPI
-        flatland/behaviour)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def default-impl-name &quot;flatland&quot;)</pre></td></tr><tr><td class="docs"><p>Get the currently configured protobuf implementation. If not defined,
-  used the hard-coded default value (see <code>default-impl-name</code>).</p>
-
-<p>  Note that the protobuf backend implementation is configured using
-  JVM system properties (i.e., the <code>-D</code> option). Projects that use <code>lein</code>
-  may set this with <code>:jvm-opts</code>
-  (e.g, <code>:jvm-opts ["-Dprotobuf.impl=flatland"]</code>).</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-impl
-  []
-  (keyword (or (System/getProperty &quot;protobuf.impl&quot;)
-               default-impl-name)))</pre></td></tr><tr><td class="docs"><p>This function is designed to be called against compiled Java protocol
-  buffer classes. To get the schema of a Clojure protobuf instance, you'll
-  want to use the <code>-&gt;schema</code> method.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn schema
-  [protobuf-class]
-  (case (get-impl)
-    :flatland (FlatlandProtoBuf/schema protobuf-class)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn create
-  [protobuf-class data]
-  (case (get-impl)
-    :flatland (new FlatlandProtoBuf protobuf-class data)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.codec" name="protobuf.impl.flatland.codec"><h1 class="project-name">protobuf.impl.flatland.codec</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.codec
-  (:require
-    [clojure.java.io :as io]
-    ;; flatland.io extends Seqable so we can concat InputStream from
-    ;; ByteBuffer sequences.
-    [flatland.io.core]
-    [gloss.core :as gloss]
-    [gloss.core.formats :as gloss-formats]
-    [gloss.io :as gloss-io]
-    [gloss.core.protocols :as gloss-protocols]
-    [protobuf.impl.flatland.mapdef :as protobuf]
-    [protobuf.impl.flatland.map :as protobuf-map]
-    [protobuf.util :as util]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(declare create)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def ^{:private true} len-key :proto_length)
-(def ^{:private true} reset-key :codec_reset)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn length-prefix
-  [proto]
-  (let [proto (protobuf/mapdef proto)
-        min   (alength (protobuf/-&gt;bytes proto {len-key 0}))
-        max   (alength (protobuf/-&gt;bytes proto {len-key Integer/MAX_VALUE}))]
-    (letfn [(check [test msg]
-              (when-not test
-                (throw (Exception. (format &quot;In %s: %s %s&quot;
-                                           (.getFullName proto) (name len-key) msg)))))]
-      (check (pos? min)
-             &quot;field is required for repeated protobufs&quot;)
-      (check (= min max)
-             &quot;must be of type fixed32 or fixed64&quot;))
-    (gloss/compile-frame (gloss/finite-frame max (create proto))
-                         #(hash-map len-key %)
-                         len-key)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn create
-  [proto &amp; {:keys [validator repeated]}]
-  (let [proto (protobuf/mapdef proto)]
-    (-&gt; (reify
-          ;; Reader method
-          gloss-protocols/Reader
-          (read-bytes [this buf-seq]
-            [true (protobuf/parse proto (io/input-stream buf-seq)) nil])
-          ;; Writer method
-          gloss-protocols/Writer
-          (sizeof [this] nil)
-          (write-bytes [this _ val]
-            (when (and validator (not (validator val)))
-              (throw (IllegalStateException.
-                      &quot;Invalid value in #'protobuf.impl.flatland.codec/create&quot;)))
-            (gloss-formats/to-buf-seq
-              (protobuf-map/-&gt;bytes
-                (if (protobuf-map/map? val)
-                  val
-                  (protobuf/create proto val))))))
-        (util/fix
-          repeated
-          #(gloss/repeated (gloss/finite-frame (length-prefix proto) %)
-                           :prefix :none)))))</pre></td></tr><tr><td class="docs"><p>Aliases</p>
-</td><td class="codes"></td></tr><tr><td class="docs"><p>Backwards-compatible alias for <code>create</code></p>
-</td><td class="codes"><pre class="brush: clojure">(def ^{:doc 
-       :deprecated &quot;3.5.1-v1.0&quot;}
-  protobuf-codec #'create)</pre></td></tr><tr><td class="docs"><p>Encoder for a codec.</p>
-</td><td class="codes"><pre class="brush: clojure">(def 
-  encode #'gloss-io/encode)</pre></td></tr><tr><td class="docs"><p>Decoder for a codec.</p>
-</td><td class="codes"><pre class="brush: clojure">(def 
-  decode #'gloss-io/decode)</pre></td></tr><tr><td class="docs"><p>XXX what is this used for? Delete, if not used; add docstring if it is</p>
-</td><td class="codes"><pre class="brush: clojure">(defn codec-schema
-  [proto]
-  (util/dissoc-fields (protobuf/mapdef-&gt;schema proto)
-                      len-key
-                      reset-key))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.core" name="protobuf.impl.flatland.core"><h1 class="project-name">protobuf.impl.flatland.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>This implementation takes its name from the original code for this project
-  that was done under the flatland Github org and which pulled in several
-  flatland libraries as dependencies.</p>
-
-<p>  This namespace is an internal implementation detail not intended for
-  developers. The API for working with all implementations of protocol
-  buffer backends for this project is provided in the <code>protobuf.core</code>
-  namespace.</p>
-</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.core
-  (:require
-    [protobuf.common :as common]
-    [protobuf.impl.flatland.map :as protobuf-map]
-    [protobuf.impl.flatland.mapdef :as protobuf])
-  (:gen-class
-    :name protobuf.impl.flatland.core.FlatlandProtoBuf
-    :implements [clojure.lang.Associative
-                 clojure.lang.ILookup
-                 clojure.lang.IPersistentCollection
-                 clojure.lang.IPersistentMap
-                 clojure.lang.Seqable
-                 java.lang.Iterable]
-    :init init
-    :constructors {[java.lang.Class
-                    clojure.lang.APersistentMap]
-                   []}
-    :methods [^:static [schema [Object] Object]]
-    :state contents
-    :main false))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn -init
-  [protobuf-class data]
-  (let [wrapper (protobuf/mapdef protobuf-class)]
-    [[] {:instance (protobuf/create wrapper data)
-         :java-wrapper wrapper
-         :protobuf-class protobuf-class}]))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.Associative   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def -containsKey (:containsKey common/associative-behaviour))
-(def -entryAt (:entryAt common/associative-behaviour))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.ILookup   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def -valAt (:valAt common/lookup-behaviour))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.IPersistentCollection   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def -cons (:cons common/persistent-collection-behaviour))
-(def -count (:count common/persistent-collection-behaviour))
-(def -empty (:empty common/persistent-collection-behaviour))
-(def -equiv (:equiv common/persistent-collection-behaviour))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.IPersistentMap   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn -assoc
-  [this k v]
-  (new protobuf.impl.flatland.core.FlatlandProtoBuf
-    (common/get-class this)
-    ((:assoc common/persistent-map-behaviour) this k v)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn -without
-  [this k]
-  (new protobuf.impl.flatland.core.FlatlandProtoBuf
-    (common/get-class this)
-    ((:without common/persistent-map-behaviour) this k)))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.Seqable   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def -seq (:seq common/seqable-behaviour))</pre></td></tr><tr><td class="docs"><p>  java.lang.Iterable   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def -forEach (:forEach common/iterable-behaviour))
-(def -iterator (:iterator common/iterable-behaviour))
-(def -spliterator (:spliterator common/iterable-behaviour))</pre></td></tr><tr><td class="docs"><p>  java.lang.Object   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def -toString (:toString common/printable-behaviour))</pre></td></tr><tr><td class="docs"><p>  protobuf.core.ProtoBufAPI   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn -schema
-  [protobuf-class]
-  (protobuf/mapdef-&gt;schema
-   (protobuf/mapdef protobuf-class)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def behaviour
-  {:-&gt;bytes (fn [this]
-             (protobuf-map/-&gt;bytes (common/get-instance this)))
-   :-&gt;schema (fn [this]
-             (protobuf/mapdef-&gt;schema (common/get-wrapper this)))
-   :bytes-&gt; (fn [this bytes]
-             (new protobuf.impl.flatland.core.FlatlandProtoBuf
-               (common/get-class this)
-               (protobuf/parse (common/get-wrapper this) bytes)))
-   :read (fn [this in]
-          (new protobuf.impl.flatland.core.FlatlandProtoBuf
-            (common/get-class this)
-            (first
-              (protobuf/read (common/get-wrapper this) in))))
-   :write (fn [this out]
-           (protobuf/write out (common/get-instance this)))})</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.map" name="protobuf.impl.flatland.map"><h1 class="project-name">protobuf.impl.flatland.map</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.map
-  (:import
-    (protobuf PersistentProtocolBufferMap))
-  (:refer-clojure :exclude [map?]))</pre></td></tr><tr><td class="docs"><p>Is the given object a <code>PersistentProtocolBufferMap?</code></p>
-</td><td class="codes"><pre class="brush: clojure">(defn map?
-  [obj]
-  (instance? PersistentProtocolBufferMap obj))</pre></td></tr><tr><td class="docs"><p>Return the byte representation of the given protobuf.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn ^&quot;[B&quot; -&gt;bytes
-  [^PersistentProtocolBufferMap p]
-  (.toByteArray p))</pre></td></tr><tr><td class="docs"><p>Get value at key ignoring extension fields.</p>
-
-<p>TODO make this nil-safe? Or just delete it?</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-raw
-  [^PersistentProtocolBufferMap p key]
-  (.getValAt p key false))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.mapdef" name="protobuf.impl.flatland.mapdef"><h1 class="project-name">protobuf.impl.flatland.mapdef</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.mapdef
-  (:require
-    [clojure.java.io :as io]
-    [protobuf.impl.flatland.map :as protobuf-map]
-    [protobuf.impl.flatland.schema :as protobuf-schema]
-    [protobuf.util :as util])
-  (:import
-    (clojure.lang Reflector)
-    (com.google.protobuf CodedInputStream
-                         Descriptors$Descriptor
-                         GeneratedMessage)
-    (java.io InputStream OutputStream)
-    (protobuf Extensions
-              PersistentProtocolBufferMap
-              PersistentProtocolBufferMap$Def
-              PersistentProtocolBufferMap$Def$NamingStrategy))
-  (:refer-clojure :exclude [map? read]))</pre></td></tr><tr><td class="docs"><p>Is the given object a <code>PersistentProtocolBufferMap$Def?</code></p>
-</td><td class="codes"><pre class="brush: clojure">(defn mapdef?
-  [obj]
-  (instance? PersistentProtocolBufferMap$Def obj))</pre></td></tr><tr><td class="docs"><p>Create a protocol buffer map definition from a string or protobuf class.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn ^PersistentProtocolBufferMap$Def mapdef
-  ([map-def]
-     (if (or (mapdef? map-def) (nil? map-def))
-       map-def
-       (mapdef map-def {})))
-  ([map-def opts]
-     (when map-def
-       (let [{:keys [^PersistentProtocolBufferMap$Def$NamingStrategy naming-strategy
-                     size-limit]
-              :or {naming-strategy PersistentProtocolBufferMap$Def/convertUnderscores
-                   size-limit 67108864}} opts ;; 64MiB
-             ^Descriptors$Descriptor descriptor
-             (if (instance? Descriptors$Descriptor map-def)
-               map-def
-               (Reflector/invokeStaticMethod ^Class map-def &quot;getDescriptor&quot; (to-array nil)))]
-         (PersistentProtocolBufferMap$Def/create descriptor naming-strategy size-limit)))))</pre></td></tr><tr><td class="docs"><p>Construct a protobuf of the given map-def.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn create
-  ([^PersistentProtocolBufferMap$Def map-def]
-     (PersistentProtocolBufferMap/construct map-def {}))
-  ([^PersistentProtocolBufferMap$Def map-def m]
-     (PersistentProtocolBufferMap/construct map-def m))
-  ([^PersistentProtocolBufferMap$Def map-def k v &amp; kvs]
-     (PersistentProtocolBufferMap/construct map-def (apply array-map k v kvs))))</pre></td></tr><tr><td class="docs"><p>Return the schema for the given mapdef.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn mapdef-&gt;schema
-  [&amp; args]
-  (let [^PersistentProtocolBufferMap$Def map-def (apply mapdef args)]
-    (protobuf-schema/field-schema (.getMessageType map-def) map-def)))</pre></td></tr><tr><td class="docs"><p>Load a protobuf of the given map-def from a data source.</p>
-
-<p>  Supported data sources are either an array of bytes or an input stream.</p>
-</td><td class="codes"><pre class="brush: clojure">(defmulti parse
-  (fn [map-def data &amp; _]
-    (type data)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod parse (Class/forName &quot;[B&quot;)
-  ([^PersistentProtocolBufferMap$Def map-def data]
-     (when data
-       (PersistentProtocolBufferMap/create map-def data)))
-  ([^PersistentProtocolBufferMap$Def map-def data ^Integer offset ^Integer length]
-     (when data
-       (let [^CodedInputStream in (CodedInputStream/newInstance data offset length)]
-         (PersistentProtocolBufferMap/parseFrom map-def in)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod parse InputStream
-  [^PersistentProtocolBufferMap$Def map-def stream]
-  (when stream
-    (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
-      (PersistentProtocolBufferMap/parseFrom map-def in))))</pre></td></tr><tr><td class="docs"><p>Return the byte representation of the given protobuf.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn ^&quot;[B&quot; -&gt;bytes
-  [^PersistentProtocolBufferMap$Def map-def m]
-  (protobuf-map/-&gt;bytes (PersistentProtocolBufferMap/construct map-def m)))</pre></td></tr><tr><td class="docs"><p>Lazily read a sequence of length-delimited protobufs of the specified map-def
-  from the given input stream.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn read
-  [^PersistentProtocolBufferMap$Def map-def in]
-  (lazy-seq
-   (io!
-    (let [^InputStream in (io/input-stream in)]
-      (if-let [p (PersistentProtocolBufferMap/parseDelimitedFrom map-def in)]
-        (cons p (read map-def in))
-        (.close in))))))</pre></td></tr><tr><td class="docs"><p>Write the given protobufs to the given output stream, prefixing each with
-  its length to delimit them.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn write
-  [out &amp; ps]
-  (io!
-   (let [^OutputStream out (io/output-stream out)]
-     (doseq [^PersistentProtocolBufferMap p ps]
-       (.writeDelimitedTo p out))
-     (.flush out))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(extend-protocol util/Combiner
-  PersistentProtocolBufferMap
-  (combine-onto [^PersistentProtocolBufferMap this other]
-    (.append this other)))</pre></td></tr><tr><td class="docs"><p>A convenience alias for <code>util/combine</code></p>
-</td><td class="codes"><pre class="brush: clojure">(def 
-  combine #'util/combine)</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.schema" name="protobuf.impl.flatland.schema"><h1 class="project-name">protobuf.impl.flatland.schema</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.schema
-  (:require
-    [clojure.string :as string]
-    [protobuf.util :as util])
-  (:import
-    (protobuf Extensions
-              PersistentProtocolBufferMap
-              PersistentProtocolBufferMap$Def )
-    (com.google.protobuf Descriptors$Descriptor
-                         Descriptors$FieldDescriptor
-                         Descriptors$FieldDescriptor$Type)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn extension
-  [ext ^Descriptors$FieldDescriptor field]
-  (-&gt; (.getOptions field)
-      (.getExtension ext)
-      (util/fix string? not-empty)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn field-type
-  [field]
-  (condp instance? field
-    Descriptors$FieldDescriptor
-    (if (.isRepeated ^Descriptors$FieldDescriptor field)
-      (condp extension field
-        (Extensions/counter)    :counter
-        (Extensions/succession) :succession
-        (Extensions/map)        :map
-        (Extensions/mapBy)      :map-by
-        (Extensions/set)        :set
-        :list)
-      :basic)
-    Descriptors$Descriptor
-    :struct))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmulti field-schema
-  (fn [field _ &amp; _] (field-type field)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn struct-schema
-  [^Descriptors$Descriptor struct
-   ^PersistentProtocolBufferMap$Def map-def
-   &amp; [parents]]
-  (let [struct-name (.getFullName struct)]
-    (into {:type :struct
-           :name struct-name}
-          (when (not-any? (partial = struct-name) parents)
-            {:fields (into {}
-                           (for [^Descriptors$FieldDescriptor field (.getFields struct)]
-                             [(.intern map-def (.getName field))
-                              (field-schema field map-def (conj parents struct-name))]))}))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn basic-schema
-  [^Descriptors$FieldDescriptor field
-   ^PersistentProtocolBufferMap$Def map-def
-   &amp; [parents]]
-  (let [java-type   (keyword (string/lower-case (.name (.getJavaType field))))
-        meta-string (extension (Extensions/meta) field)]
-    (merge (case java-type
-             :message (struct-schema (.getMessageType field) map-def parents)
-             :enum    {:type   :enum
-                       :values (set (map #(.clojureEnumValue map-def %)
-                                         (.. field getEnumType getValues)))}
-             {:type java-type})
-           (when (.hasDefaultValue field)
-             {:default (.getDefaultValue field)})
-           (when meta-string
-             (read-string meta-string)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn subfield
-  [^Descriptors$FieldDescriptor field field-name]
-  (.findFieldByName (.getMessageType field) (name field-name)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :basic
-  [field map-def &amp; [parents]]
-  (basic-schema field map-def parents))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :list
-  [field map-def &amp; [parents]]
-  {:type   :list
-   :values (basic-schema field map-def parents)})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :succession
-  [field map-def &amp; [parents]]
-  (assoc (basic-schema field map-def parents)
-    :succession true))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :counter
-  [field map-def &amp; [parents]]
-  (assoc (basic-schema field map-def parents)
-    :counter true))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :set
-  [field map-def &amp; [parents]]
-  {:type   :set
-   :values (field-schema (subfield field :item) map-def parents)})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :map
-  [field map-def &amp; [parents]]
-  {:type   :map
-   :keys   (field-schema (subfield field :key) map-def parents)
-   :values (field-schema (subfield field :val) map-def parents)})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :map-by
-  [field map-def &amp; [parents]]
-  (let [map-by (extension (Extensions/mapBy) field)]
-    {:type   :map
-     :keys   (field-schema (subfield field map-by) map-def parents)
-     :values (basic-schema field map-def parents)}))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :struct
-  [field map-def &amp; [parents]]
-  (struct-schema field map-def parents))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.util" name="protobuf.util"><h1 class="project-name">protobuf.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">com.google.protobuf/protobuf-java</td><td class="dotted"><hr /></td><td class="dep-version">3.5.1</td></tr><tr><td class="dep-name">gloss</td><td class="dotted"><hr /></td><td class="dep-version">0.2.6</td></tr><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.8.0</td></tr><tr><td class="dep-name">org.flatland/io</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#protobuf.util">protobuf.util</a></li><li><a href="#protobuf.impl.flatland.schema">protobuf.impl.flatland.schema</a></li><li><a href="#protobuf.impl.flatland.codec">protobuf.impl.flatland.codec</a></li><li><a href="#protobuf.impl.flatland.core">protobuf.impl.flatland.core</a></li><li><a href="#protobuf.impl.flatland.map">protobuf.impl.flatland.map</a></li><li><a href="#protobuf.impl.flatland.mapdef">protobuf.impl.flatland.mapdef</a></li><li><a href="#protobuf.core">protobuf.core</a></li><li><a href="#protobuf.common">protobuf.common</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.util" name="protobuf.util"><h1 class="project-name">protobuf.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns protobuf.util
   (:import
     (clojure.lang IDeref
@@ -3447,7 +3020,438 @@ net.brehaut.ClojureTools = (function (SH) {
   [schema &amp; fields]
   (prewalk (to-fix #(= :struct (:type %))
                    #(apply update % :fields dissoc fields))
-           schema))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_protobuf.common">protobuf.common</li><li class="floating-toc-li" id="floating-toc_protobuf.core">protobuf.core</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.codec">protobuf.impl.flatland.codec</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.core">protobuf.impl.flatland.core</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.map">protobuf.impl.flatland.map</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.mapdef">protobuf.impl.flatland.mapdef</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.schema">protobuf.impl.flatland.schema</li><li class="floating-toc-li" id="floating-toc_protobuf.util">protobuf.util</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+           schema))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.schema" name="protobuf.impl.flatland.schema"><h1 class="project-name">protobuf.impl.flatland.schema</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.schema
+  (:require
+    [clojure.string :as string]
+    [protobuf.util :as util])
+  (:import
+    (protobuf Extensions
+              PersistentProtocolBufferMap
+              PersistentProtocolBufferMap$Def )
+    (com.google.protobuf Descriptors$Descriptor
+                         Descriptors$FieldDescriptor
+                         Descriptors$FieldDescriptor$Type)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn extension
+  [ext ^Descriptors$FieldDescriptor field]
+  (-&gt; (.getOptions field)
+      (.getExtension ext)
+      (util/fix string? not-empty)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn field-type
+  [field]
+  (condp instance? field
+    Descriptors$FieldDescriptor
+    (if (.isRepeated ^Descriptors$FieldDescriptor field)
+      (condp extension field
+        (Extensions/counter)    :counter
+        (Extensions/succession) :succession
+        (Extensions/map)        :map
+        (Extensions/mapBy)      :map-by
+        (Extensions/set)        :set
+        :list)
+      :basic)
+    Descriptors$Descriptor
+    :struct))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmulti field-schema
+  (fn [field _ &amp; _] (field-type field)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn struct-schema
+  [^Descriptors$Descriptor struct
+   ^PersistentProtocolBufferMap$Def map-def
+   &amp; [parents]]
+  (let [struct-name (.getFullName struct)]
+    (into {:type :struct
+           :name struct-name}
+          (when (not-any? (partial = struct-name) parents)
+            {:fields (into {}
+                           (for [^Descriptors$FieldDescriptor field (.getFields struct)]
+                             [(.intern map-def (.getName field))
+                              (field-schema field map-def (conj parents struct-name))]))}))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn basic-schema
+  [^Descriptors$FieldDescriptor field
+   ^PersistentProtocolBufferMap$Def map-def
+   &amp; [parents]]
+  (let [java-type   (keyword (string/lower-case (.name (.getJavaType field))))
+        meta-string (extension (Extensions/meta) field)]
+    (merge (case java-type
+             :message (struct-schema (.getMessageType field) map-def parents)
+             :enum    {:type   :enum
+                       :values (set (map #(.clojureEnumValue map-def %)
+                                         (.. field getEnumType getValues)))}
+             {:type java-type})
+           (when (.hasDefaultValue field)
+             {:default (.getDefaultValue field)})
+           (when meta-string
+             (read-string meta-string)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn subfield
+  [^Descriptors$FieldDescriptor field field-name]
+  (.findFieldByName (.getMessageType field) (name field-name)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :basic
+  [field map-def &amp; [parents]]
+  (basic-schema field map-def parents))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :list
+  [field map-def &amp; [parents]]
+  {:type   :list
+   :values (basic-schema field map-def parents)})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :succession
+  [field map-def &amp; [parents]]
+  (assoc (basic-schema field map-def parents)
+    :succession true))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :counter
+  [field map-def &amp; [parents]]
+  (assoc (basic-schema field map-def parents)
+    :counter true))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :set
+  [field map-def &amp; [parents]]
+  {:type   :set
+   :values (field-schema (subfield field :item) map-def parents)})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :map
+  [field map-def &amp; [parents]]
+  {:type   :map
+   :keys   (field-schema (subfield field :key) map-def parents)
+   :values (field-schema (subfield field :val) map-def parents)})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :map-by
+  [field map-def &amp; [parents]]
+  (let [map-by (extension (Extensions/mapBy) field)]
+    {:type   :map
+     :keys   (field-schema (subfield field map-by) map-def parents)
+     :values (basic-schema field map-def parents)}))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod field-schema :struct
+  [field map-def &amp; [parents]]
+  (struct-schema field map-def parents))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.codec" name="protobuf.impl.flatland.codec"><h1 class="project-name">protobuf.impl.flatland.codec</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.codec
+  (:require
+    [clojure.java.io :as io]
+    ;; flatland.io extends Seqable so we can concat InputStream from
+    ;; ByteBuffer sequences.
+    [flatland.io.core]
+    [gloss.core :as gloss]
+    [gloss.core.formats :as gloss-formats]
+    [gloss.io :as gloss-io]
+    [gloss.core.protocols :as gloss-protocols]
+    [protobuf.impl.flatland.mapdef :as protobuf]
+    [protobuf.impl.flatland.map :as protobuf-map]
+    [protobuf.util :as util]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(declare create)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def ^{:private true} len-key :proto_length)
+(def ^{:private true} reset-key :codec_reset)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn length-prefix
+  [proto]
+  (let [proto (protobuf/mapdef proto)
+        min   (alength (protobuf/-&gt;bytes proto {len-key 0}))
+        max   (alength (protobuf/-&gt;bytes proto {len-key Integer/MAX_VALUE}))]
+    (letfn [(check [test msg]
+              (when-not test
+                (throw (Exception. (format &quot;In %s: %s %s&quot;
+                                           (.getFullName proto) (name len-key) msg)))))]
+      (check (pos? min)
+             &quot;field is required for repeated protobufs&quot;)
+      (check (= min max)
+             &quot;must be of type fixed32 or fixed64&quot;))
+    (gloss/compile-frame (gloss/finite-frame max (create proto))
+                         #(hash-map len-key %)
+                         len-key)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn create
+  [proto &amp; {:keys [validator repeated]}]
+  (let [proto (protobuf/mapdef proto)]
+    (-&gt; (reify
+          ;; Reader method
+          gloss-protocols/Reader
+          (read-bytes [this buf-seq]
+            [true (protobuf/parse proto (io/input-stream buf-seq)) nil])
+          ;; Writer method
+          gloss-protocols/Writer
+          (sizeof [this] nil)
+          (write-bytes [this _ val]
+            (when (and validator (not (validator val)))
+              (throw (IllegalStateException.
+                      &quot;Invalid value in #'protobuf.impl.flatland.codec/create&quot;)))
+            (gloss-formats/to-buf-seq
+              (protobuf-map/-&gt;bytes
+                (if (protobuf-map/map? val)
+                  val
+                  (protobuf/create proto val))))))
+        (util/fix
+          repeated
+          #(gloss/repeated (gloss/finite-frame (length-prefix proto) %)
+                           :prefix :none)))))</pre></td></tr><tr><td class="docs"><p>Aliases</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>Backwards-compatible alias for <code>create</code></p>
+</td><td class="codes"><pre class="brush: clojure">(def ^{:doc 
+       :deprecated &quot;3.5.1-v1.0&quot;}
+  protobuf-codec #'create)</pre></td></tr><tr><td class="docs"><p>Encoder for a codec.</p>
+</td><td class="codes"><pre class="brush: clojure">(def 
+  encode #'gloss-io/encode)</pre></td></tr><tr><td class="docs"><p>Decoder for a codec.</p>
+</td><td class="codes"><pre class="brush: clojure">(def 
+  decode #'gloss-io/decode)</pre></td></tr><tr><td class="docs"><p>XXX what is this used for? Delete, if not used; add docstring if it is</p>
+</td><td class="codes"><pre class="brush: clojure">(defn codec-schema
+  [proto]
+  (util/dissoc-fields (protobuf/mapdef-&gt;schema proto)
+                      len-key
+                      reset-key))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.core" name="protobuf.impl.flatland.core"><h1 class="project-name">protobuf.impl.flatland.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>This implementation takes its name from the original code for this project
+  that was done under the flatland Github org and which pulled in several
+  flatland libraries as dependencies.</p>
+
+<p>  This namespace is an internal implementation detail not intended for
+  developers. The API for working with all implementations of protocol
+  buffer backends for this project is provided in the <code>protobuf.core</code>
+  namespace.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.core
+  (:require
+    [protobuf.common :as common]
+    [protobuf.impl.flatland.map :as protobuf-map]
+    [protobuf.impl.flatland.mapdef :as protobuf])
+  (:gen-class
+    :name protobuf.impl.flatland.core.FlatlandProtoBuf
+    :implements [clojure.lang.Associative
+                 clojure.lang.ILookup
+                 clojure.lang.IPersistentCollection
+                 clojure.lang.IPersistentMap
+                 clojure.lang.Seqable
+                 java.lang.Iterable]
+    :init init
+    :constructors {[java.lang.Class
+                    clojure.lang.APersistentMap]
+                   []}
+    :methods [^:static [schema [Object] Object]]
+    :state contents
+    :main false))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn -init
+  [protobuf-class data]
+  (let [wrapper (protobuf/mapdef protobuf-class)]
+    [[] {:instance (protobuf/create wrapper data)
+         :java-wrapper wrapper
+         :protobuf-class protobuf-class}]))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.Associative   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def -containsKey (:containsKey common/associative-behaviour))
+(def -entryAt (:entryAt common/associative-behaviour))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.ILookup   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def -valAt (:valAt common/lookup-behaviour))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.IPersistentCollection   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def -cons (:cons common/persistent-collection-behaviour))
+(def -count (:count common/persistent-collection-behaviour))
+(def -empty (:empty common/persistent-collection-behaviour))
+(def -equiv (:equiv common/persistent-collection-behaviour))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.IPersistentMap   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn -assoc
+  [this k v]
+  (new protobuf.impl.flatland.core.FlatlandProtoBuf
+    (common/get-class this)
+    ((:assoc common/persistent-map-behaviour) this k v)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def -assocEx (:assocEx common/persistent-map-behaviour))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn -without
+  [this k]
+  (new protobuf.impl.flatland.core.FlatlandProtoBuf
+    (common/get-class this)
+    ((:without common/persistent-map-behaviour) this k)))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.Seqable   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def -seq (:seq common/seqable-behaviour))</pre></td></tr><tr><td class="docs"><p>  java.lang.Iterable   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def -forEach (:forEach common/iterable-behaviour))
+(def -iterator (:iterator common/iterable-behaviour))
+(def -spliterator (:spliterator common/iterable-behaviour))</pre></td></tr><tr><td class="docs"><p>  java.lang.Object   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def -toString (:toString common/printable-behaviour))</pre></td></tr><tr><td class="docs"><p>  protobuf.core.ProtoBufAPI   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn -schema
+  [protobuf-class]
+  (protobuf/mapdef-&gt;schema
+   (protobuf/mapdef protobuf-class)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def behaviour
+  {:-&gt;bytes (fn [this]
+             (protobuf-map/-&gt;bytes (common/get-instance this)))
+   :-&gt;schema (fn [this]
+             (protobuf/mapdef-&gt;schema (common/get-wrapper this)))
+   :bytes-&gt; (fn [this bytes]
+             (new protobuf.impl.flatland.core.FlatlandProtoBuf
+               (common/get-class this)
+               (protobuf/parse (common/get-wrapper this) bytes)))
+   :read (fn [this in]
+          (new protobuf.impl.flatland.core.FlatlandProtoBuf
+            (common/get-class this)
+            (first
+              (protobuf/read (common/get-wrapper this) in))))
+   :write (fn [this out]
+           (protobuf/write out (common/get-instance this)))})</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.map" name="protobuf.impl.flatland.map"><h1 class="project-name">protobuf.impl.flatland.map</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.map
+  (:import
+    (protobuf PersistentProtocolBufferMap))
+  (:refer-clojure :exclude [map?]))</pre></td></tr><tr><td class="docs"><p>Is the given object a <code>PersistentProtocolBufferMap?</code></p>
+</td><td class="codes"><pre class="brush: clojure">(defn map?
+  [obj]
+  (instance? PersistentProtocolBufferMap obj))</pre></td></tr><tr><td class="docs"><p>Return the byte representation of the given protobuf.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn ^&quot;[B&quot; -&gt;bytes
+  [^PersistentProtocolBufferMap p]
+  (.toByteArray p))</pre></td></tr><tr><td class="docs"><p>Get value at key ignoring extension fields.</p>
+
+<p>TODO make this nil-safe? Or just delete it?</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-raw
+  [^PersistentProtocolBufferMap p key]
+  (.getValAt p key false))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.impl.flatland.mapdef" name="protobuf.impl.flatland.mapdef"><h1 class="project-name">protobuf.impl.flatland.mapdef</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns protobuf.impl.flatland.mapdef
+  (:require
+    [clojure.java.io :as io]
+    [protobuf.impl.flatland.map :as protobuf-map]
+    [protobuf.impl.flatland.schema :as protobuf-schema]
+    [protobuf.util :as util])
+  (:import
+    (clojure.lang Reflector)
+    (com.google.protobuf CodedInputStream
+                         Descriptors$Descriptor
+                         GeneratedMessage)
+    (java.io InputStream OutputStream)
+    (protobuf Extensions
+              PersistentProtocolBufferMap
+              PersistentProtocolBufferMap$Def
+              PersistentProtocolBufferMap$Def$NamingStrategy))
+  (:refer-clojure :exclude [map? read]))</pre></td></tr><tr><td class="docs"><p>Is the given object a <code>PersistentProtocolBufferMap$Def?</code></p>
+</td><td class="codes"><pre class="brush: clojure">(defn mapdef?
+  [obj]
+  (instance? PersistentProtocolBufferMap$Def obj))</pre></td></tr><tr><td class="docs"><p>Create a protocol buffer map definition from a string or protobuf class.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn ^PersistentProtocolBufferMap$Def mapdef
+  ([map-def]
+     (if (or (mapdef? map-def) (nil? map-def))
+       map-def
+       (mapdef map-def {})))
+  ([map-def opts]
+     (when map-def
+       (let [{:keys [^PersistentProtocolBufferMap$Def$NamingStrategy naming-strategy
+                     size-limit]
+              :or {naming-strategy PersistentProtocolBufferMap$Def/convertUnderscores
+                   size-limit 67108864}} opts ;; 64MiB
+             ^Descriptors$Descriptor descriptor
+             (if (instance? Descriptors$Descriptor map-def)
+               map-def
+               (Reflector/invokeStaticMethod ^Class map-def &quot;getDescriptor&quot; (to-array nil)))]
+         (PersistentProtocolBufferMap$Def/create descriptor naming-strategy size-limit)))))</pre></td></tr><tr><td class="docs"><p>Construct a protobuf of the given map-def.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn create
+  ([^PersistentProtocolBufferMap$Def map-def]
+     (PersistentProtocolBufferMap/construct map-def {}))
+  ([^PersistentProtocolBufferMap$Def map-def m]
+     (PersistentProtocolBufferMap/construct map-def m))
+  ([^PersistentProtocolBufferMap$Def map-def k v &amp; kvs]
+     (PersistentProtocolBufferMap/construct map-def (apply array-map k v kvs))))</pre></td></tr><tr><td class="docs"><p>Return the schema for the given mapdef.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn mapdef-&gt;schema
+  [&amp; args]
+  (let [^PersistentProtocolBufferMap$Def map-def (apply mapdef args)]
+    (protobuf-schema/field-schema (.getMessageType map-def) map-def)))</pre></td></tr><tr><td class="docs"><p>Load a protobuf of the given map-def from a data source.</p>
+
+<p>  Supported data sources are either an array of bytes or an input stream.</p>
+</td><td class="codes"><pre class="brush: clojure">(defmulti parse
+  (fn [map-def data &amp; _]
+    (type data)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod parse (Class/forName &quot;[B&quot;)
+  ([^PersistentProtocolBufferMap$Def map-def data]
+     (when data
+       (PersistentProtocolBufferMap/create map-def data)))
+  ([^PersistentProtocolBufferMap$Def map-def data ^Integer offset ^Integer length]
+     (when data
+       (let [^CodedInputStream in (CodedInputStream/newInstance data offset length)]
+         (PersistentProtocolBufferMap/parseFrom map-def in)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod parse InputStream
+  [^PersistentProtocolBufferMap$Def map-def stream]
+  (when stream
+    (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
+      (PersistentProtocolBufferMap/parseFrom map-def in))))</pre></td></tr><tr><td class="docs"><p>Return the byte representation of the given protobuf.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn ^&quot;[B&quot; -&gt;bytes
+  [^PersistentProtocolBufferMap$Def map-def m]
+  (protobuf-map/-&gt;bytes (PersistentProtocolBufferMap/construct map-def m)))</pre></td></tr><tr><td class="docs"><p>Lazily read a sequence of length-delimited protobufs of the specified map-def
+  from the given input stream.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn read
+  [^PersistentProtocolBufferMap$Def map-def in]
+  (lazy-seq
+   (io!
+    (let [^InputStream in (io/input-stream in)]
+      (if-let [p (PersistentProtocolBufferMap/parseDelimitedFrom map-def in)]
+        (cons p (read map-def in))
+        (.close in))))))</pre></td></tr><tr><td class="docs"><p>Write the given protobufs to the given output stream, prefixing each with
+  its length to delimit them.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn write
+  [out &amp; ps]
+  (io!
+   (let [^OutputStream out (io/output-stream out)]
+     (doseq [^PersistentProtocolBufferMap p ps]
+       (.writeDelimitedTo p out))
+     (.flush out))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-protocol util/Combiner
+  PersistentProtocolBufferMap
+  (combine-onto [^PersistentProtocolBufferMap this other]
+    (.append this other)))</pre></td></tr><tr><td class="docs"><p>A convenience alias for <code>util/combine</code></p>
+</td><td class="codes"><pre class="brush: clojure">(def 
+  combine #'util/combine)</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.core" name="protobuf.core"><h1 class="project-name">protobuf.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>This is the public API for working with protocol buffers.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns protobuf.core
+  (:require
+    [protobuf.impl.flatland.core :as flatland])
+  (:import
+    (protobuf.impl.flatland.core FlatlandProtoBuf))
+  (:refer-clojure :exclude [map? read]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defprotocol ProtoBufAPI
+  (-&gt;bytes [this])
+  (-&gt;schema [this])
+  (bytes-&gt; [this bytes])
+  (read [this in])
+  (write [this out]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend FlatlandProtoBuf
+        ProtoBufAPI
+        flatland/behaviour)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def default-impl-name &quot;flatland&quot;)</pre></td></tr><tr><td class="docs"><p>Get the currently configured protobuf implementation. If not defined,
+  used the hard-coded default value (see <code>default-impl-name</code>).</p>
+
+<p>  Note that the protobuf backend implementation is configured using
+  JVM system properties (i.e., the <code>-D</code> option). Projects that use <code>lein</code>
+  may set this with <code>:jvm-opts</code>
+  (e.g, <code>:jvm-opts ["-Dprotobuf.impl=flatland"]</code>).</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-impl
+  []
+  (keyword (or (System/getProperty &quot;protobuf.impl&quot;)
+               default-impl-name)))</pre></td></tr><tr><td class="docs"><p>This function is designed to be called against compiled Java protocol
+  buffer classes. To get the schema of a Clojure protobuf instance, you'll
+  want to use the <code>-&gt;schema</code> method.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn schema
+  [protobuf-class]
+  (case (get-impl)
+    :flatland (FlatlandProtoBuf/schema protobuf-class)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn create
+  ([protobuf-class]
+    (create protobuf-class {}))
+  ([protobuf-class data]
+    (case (get-impl)
+      :flatland (new FlatlandProtoBuf protobuf-class data))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.common" name="protobuf.common"><h1 class="project-name">protobuf.common</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns protobuf.common)</pre></td></tr><tr><td class="docs"><p>  Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-class
+  [this]
+  (:protobuf-class (.contents this)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-instance
+  [this]
+  (:instance (.contents this)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-wrapper
+  [this]
+  (:java-wrapper (.contents this)))</pre></td></tr><tr><td class="docs"><p>  Behaviours   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def associative-behaviour
+  {:containsKey (fn [this data] (.containsKey (get-instance this) data))
+   :entryAt (fn [this data] (.entryAt (get-instance this) data))})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def iterable-behaviour
+  {:forEach (fn [this consumer] (.forEach (get-instance this) consumer))
+   :iterator (fn [this] (.iterator (get-instance this)))
+   :spliterator (fn [this] (.spliterator (get-instance this)))})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def lookup-behaviour
+  {:valAt (fn ([this k] (.valAt (get-instance this) k))
+              ([this k fallback] (.valAt (get-instance this) k fallback)))})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def persistent-collection-behaviour
+  {:cons (fn [this o] (.cons (get-instance this) o))
+   :count (fn [this] (.count (get-instance this)))
+   :empty (fn [this] (.empty (get-instance this)))
+   :equiv (fn [this o]
+           (and (= (get-class this) (get-class o))
+                (.equiv (get-instance this) (get-instance o))))})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def persistent-map-behaviour
+  {:assoc (fn [this k v] (.assoc (get-instance this) k v))
+   :assocEx (fn [m k v] (throw (new Exception)))
+   :without (fn [this k] (.without (get-instance this) k))})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def printable-behaviour
+  {:toString (fn [this] (.toString (get-instance this)))})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def seqable-behaviour
+  {:seq (fn [this] (.seq (get-instance this)))})</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_protobuf.util">protobuf.util</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.schema">protobuf.impl.flatland.schema</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.codec">protobuf.impl.flatland.codec</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.core">protobuf.impl.flatland.core</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.map">protobuf.impl.flatland.map</li><li class="floating-toc-li" id="floating-toc_protobuf.impl.flatland.mapdef">protobuf.impl.flatland.mapdef</li><li class="floating-toc-li" id="floating-toc_protobuf.core">protobuf.core</li><li class="floating-toc-li" id="floating-toc_protobuf.common">protobuf.common</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
 SyntaxHighlighter.all();
 
 // hackity hack

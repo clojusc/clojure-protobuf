@@ -21,7 +21,7 @@
   <li>the <a href="https://developers.google.com/protocol-buffers/docs/reference/java-generated">Java Generated Code Guide</a></li>
 </ul>
 <h2><a href="#why-use-protocol-buffers-" name="why-use-protocol-buffers-"></a>Why Use Protocol Buffers?</h2>
-<p>Protocol buffers solve the problem of efficiently serializing and deserializing structured data in a language-agnostic manner, accessible a vast array of applications (as long as the applications are written in a language that has a protobuf library). We’ll illustrate this with an example.</p>
+<p>Protocol buffers solve the problem of efficiently serializing and deserializing structured data in a language-agnostic manner, accessible to a vast array of applications (as long as the applications are written in a language that has a protobuf library). We’ll illustrate this with an example.</p>
 <p>The example we’re going to use is a very simple “address book” application that can read and write people’s contact details to and from a file. Each person in the address book has a name, an ID, an email address, and a contact phone number.</p>
 <p>So, how might one serialize and retrieve structured data like this if protobuf wasn’t around? There are a few ways to solve this problem:</p>
 <ul>
@@ -46,9 +46,9 @@ message Person {
   optional string email = 3;
 
   enum PhoneType {
-    MOBILE = 0;
-    HOME = 1;
-    WORK = 2;
+    mobile = 0;
+    home = 1;
+    work = 2;
   }
 
   message PhoneNumber {
@@ -106,7 +106,7 @@ AddressBookProtos.java
     "target/examples"
     "target/testing"]}
 </code></pre>
-<p></p><blockquote> Fore convenience, the Clojure protobuf project always compiles the examples and the tests before starting up the REPL, so they are always freshly available to developers. </blockquote><p></p>
+<p></p><blockquote> Fore convenience, the Clojure protobuf project itself always compiles the examples and the tests before starting up the REPL, so they are always freshly available to the project contributors. You can do the same thing in your own Clojure projects. </blockquote><p></p>
 <h2><a href="#the-protocol-buffer-api" name="the-protocol-buffer-api"></a>The Protocol Buffer API</h2>
 <p>Let’s fire up the REPL and see how to use the compiled code from Clojure:</p>
 <pre><code class="bash">$ lein repl
@@ -124,7 +124,7 @@ nil
                              AddressBookProtos$AddressBook))
 protobuf.examples.tutorial.AddressBookProtos$AddressBook
 </code></pre>
-<p>Note that for nested inner classes, we simply keep using the inner class separator <code>$</code> of Clojure’s Java inter-op.</p>
+<p>Note that for nested inner classes, we simply use the inner class separator <code>$</code> of Clojure’s Java inter-op.</p>
 <p>We can view the full, nested data schema in Clojure data:</p>
 <pre><code class="clj">[protobuf.dev] λ=&gt; (pprint (protobuf/schema AddressBookProtos$AddressBook))
 {:type :struct,
@@ -153,7 +153,8 @@ protobuf.examples.tutorial.AddressBookProtos$AddressBook
          #object[com.google.protobuf.Descriptors$EnumValueDescriptor 0x1df8368f "HOME"]}}}}}}}}}
 nil
 </code></pre>
-<p></p><blockquote> There’s currently a bug/missing feature where the default value of an <code>enum</code> is not converted to Clojure data. For current status on this issue, see: <a href="https://github.com/clojusc/protobuf/issues/22"></a><a href="https://github.com/clojusc/protobuf/issues/22">https://github.com/clojusc/protobuf/issues/22</a> </blockquote><p></p>
+<p></p><blockquote> There’s currently a bug/missing feature where the default value of an <code>enum</code> is not converted to Clojure data.<p></p>
+<p>For current status on this issue, see: <a href="https://github.com/clojusc/protobuf/issues/22"></a><a href="https://github.com/clojusc/protobuf/issues/22">https://github.com/clojusc/protobuf/issues/22</a> </p></blockquote><p></p>
 <h2><a href="#the" name="the"></a>The <code>ProtoBufAPI</code></h2>
 <p>The following methods all take an instance of <code>protobuf.core.ProtoBufAPI</code> as their first argument. An example implementation is <code>protobuf.impl.flatland.core.FlatlandProtoBuf</code>.</p>
 <p>Note that the constructor is not a method, and as such, does not take a <code>ProtoBufAPI</code> instance as its first arguement.</p>
@@ -213,19 +214,35 @@ nil
     {:number "555-1214", :type :work}]}]}
 nil
 </code></pre>
-<h3><a href="#writing-a-messages" name="writing-a-messages"></a>Writing a Messages</h3>
+<h3><a href="#writing-a-message" name="writing-a-message"></a>Writing a Message</h3>
 <p>These can then be written to an output stream:</p>
 <pre><code class="clj">[protobuf.dev] λ=&gt; (protobuf/write addresses "/tmp/address-book.db")
 nil
 </code></pre>
-<p>Note that the first argument doesn’t have to be a string representing a file name; it can be anything which <code>clojure.java.io/output-stream</code> can coerce to a stream (e.g., <code>OutputStream</code>, <code>File</code>, <code>URI</code>, <code>URL</code>, <code>Socket</code>, or <code>String</code>).</p>
-<p>Take a look at the contents of <code>/tmp/address-book.db</code> to convince yourself the the data was actually written there. Then, we’ll try reading it back in …</p>
+<p>Note that the second argument doesn’t have to be a string representing a file name; it can be anything which <code>clojure.java.io/output-stream</code> can coerce to a stream (e.g., <code>OutputStream</code>, <code>File</code>, <code>URI</code>, <code>URL</code>, <code>Socket</code>, or <code>String</code>).</p>
+<p>Take a look at the contents of <code>/tmp/address-book.db</code> to convince yourself that the data was actually written there. Then, we’ll try reading it back in …</p>
 <h3><a href="#reading-a-message" name="reading-a-message"></a>Reading a Message</h3>
 <p>Reading stored protobuf data is just as easy as writing it:</p>
 <pre><code class="clj">[protobuf.dev] λ=&gt; (def address-book (protobuf/read addresses "/tmp/address-book.db"))
 #'protobuf.dev/address-book
 [protobuf.dev] λ=&gt; (= addresses address-book)
 true
+</code></pre>
+<p>It may seem a bit awkward to have need an instance already in order to read data to <em>create</em> an instance, but the instance is what holds the underlying Java class, which is needed for the read operation. It’s not that bad, really – you can create an empty instance and use that for a <code>read</code>, for example:</p>
+<pre><code class="clj">[protobuf.dev] λ=&gt; (def address-book (protobuf/read
+                                      (protobuf/create AddressBookProtos$AddressBook)
+                                                       "/tmp/address-book.db"))
+#'protobuf.dev/address-book
+[protobuf.dev] λ=&gt; (pprint address-book)
+{:people
+ [{:name "Alice",
+   :id 108,
+   :email "alice@example.com",
+   :phones
+   [{:number "555-1212", :type :home}
+    {:number "555-1213", :type :mobile}
+    {:number "555-1214", :type :work}]}]}
+nil
 </code></pre>
 <h2><a href="#extending-a-protocol" name="extending-a-protocol"></a>Extending a Protocol</h2>
 <p>Sooner or later after you release the code that uses your protocol buffer, you will undoubtedly want to “improve” the protocol buffer’s definition. If you want your new buffers to be backwards-compatible, and your old buffers to be forward-compatible – and you almost certainly do want this – then there are some rules you need to follow. In the new version of the protocol buffer:</p>
@@ -237,6 +254,7 @@ true
 </ul>
 <p>If you follow these rules, old code will happily read new messages and simply ignore any new fields. To the old code, optional fields that were deleted will simply have their default value, and deleted repeated fields will be empty. New code will also transparently read old messages. However, keep in mind that new optional fields will not be present in old messages, so you will need to either check explicitly whether they’re set or provide a reasonable default value in your <code>.proto</code> file with <code>[default = value]</code> after the tag number.</p>
 <p>If the default value is not specified for an optional element, a type-specific default value is used instead: for strings, the default value is the empty string. For booleans, the default value is <code>false</code>. For numeric types, the default value is zero. Note also that if you added a new repeated field, your new code will not be able to tell whether it was left empty (by new code) or never set at all (by old code).</p>
+<p>Be sure to see our docs on <a href="1100-extensions.html">Extension usage</a> for Clojure protobuf.</p>
 <h2><a href="#advanced-usage" name="advanced-usage"></a>Advanced Usage</h2>
 <p>Protocol buffers have uses that go beyond simple accessors and serialization. Be sure to explore the <a href="https://developers.google.com/protocol-buffers/docs/reference/java/index.html">Java API reference</a> to see what else you can do with them.</p>
 <p>One key feature provided by protocol message classes is <code>reflection</code>. You can iterate over the fields of a message and manipulate their values without writing your code against any specific message type. One very useful way to use reflection is for converting protocol messages to and from other encodings, such as XML or JSON. A more advanced use of reflection might be to find differences between two messages of the same type, or to develop a sort of “regular expressions for protocol messages” in which you can write expressions that match certain message contents. If you use your imagination, it’s possible to apply Protocol Buffers to a much wider range of problems than you might initially expect!</p>
