@@ -65,9 +65,7 @@
       "+test,+custom-repl"
       "do"
       ["clean"]
-      ["protoc-extension"]
-      ["protoc-test"]
-      ["protoc-examples"]
+      ["protoc-all"]
       ["repl"]]
     ;; Doc-generation
     "clojuredocs" [
@@ -138,6 +136,6 @@
       ["clean"]
       ["ubercompile"]
       ["clean"]
-      ["lint"]
       ["protoc-all"]
-      ["test-all"]]})
+      ["test-all"]
+      ["lint"]]})
