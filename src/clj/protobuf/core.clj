@@ -40,6 +40,8 @@
     :flatland (FlatlandProtoBuf/schema protobuf-class)))
 
 (defn create
-  [protobuf-class data]
-  (case (get-impl)
-    :flatland (new FlatlandProtoBuf protobuf-class data)))
+  ([protobuf-class]
+    (create protobuf-class {}))
+  ([protobuf-class data]
+    (case (get-impl)
+      :flatland (new FlatlandProtoBuf protobuf-class data))))
