@@ -93,10 +93,9 @@ Which gives us:
  :likes ["climbing" "running" "jumping"]}
 ```
 
-The data stored in the `:instance` key is a protocol buffer map and is
-immutable just like other clojure objects. It is similar to a struct-map,
-except that you cannot insert fields that aren't specified in the `.proto`
-file.
+The data stored in the instance is immutable just like other clojure objects.
+It is similar to a struct-map, except that you cannot insert fields that aren't
+specified in the `.proto` file.
 
 (For instance, if you do a round trip with the data like we did above, but use
 `:dislikes` -- not in the protobuf definition -- instead of `:likes`,
