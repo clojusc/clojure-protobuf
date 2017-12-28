@@ -102,6 +102,11 @@
        "+test"
        "shell"
        "bin/compile-example-protobufs"]
+    "protoc-all" [
+      "do"
+      ["protoc-extension"]
+      ["protoc-test"]
+      ["protoc-examples"]]
     ;; Deps, linting, and tests
     "check-deps" [
       "with-profile"
@@ -118,12 +123,15 @@
       "with-profile"
       "+1.5:+1.6:+1.7:+1.9:+default"
       "test"]
+    "clean-test" [
+      "do"
+      ["clean"]
+      ["protoc-all"]
+      ["test"]]
     "clean-test-all" [
       "do"
       ["clean"]
-      ["protoc-extension"]
-      ["protoc-test"]
-      ["protoc-examples"]
+      ["protoc-all"]
       ["test-all"]]
     "build-test" [
       "do"
@@ -131,7 +139,5 @@
       ["ubercompile"]
       ["clean"]
       ["lint"]
-      ["protoc-extension"]
-      ["protoc-test"]
-      ["protoc-examples"]
+      ["protoc-all"]
       ["test-all"]]})
