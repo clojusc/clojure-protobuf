@@ -22,6 +22,11 @@
           (byte-array
            (map unchecked-byte [1 2 3 4 -1])))})
 
-(deftest example-test
+(deftest example-as-map-test
   (is (= data
-         (:instance (protobuf/create Example$Photo data)))))
+         (into {} (protobuf/create Example$Photo data)))))
+
+(deftest example-round-trip-test
+  (let [p (protobuf/create Example$Photo data)
+        b (protobuf/->bytes p)]
+    (= p (protobuf/bytes-> p b))))
