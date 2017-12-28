@@ -31,7 +31,7 @@ Additionally, you may find these useful:
 ## Why Use Protocol Buffers?
 
 Protocol buffers solve the problem of efficiently serializing and
-deserializing structured data in a language-agnostic manner, accessible a vast
+deserializing structured data in a language-agnostic manner, accessible to a vast
 array of applications (as long as the applications are written in a language
 that has a protobuf library). We'll illustrate this with an example.
 
@@ -227,9 +227,9 @@ For example, this is what the Clojure protobuf project has set, using the
 ```
 
 <blockquote>
-For convenience, the Clojure protobuf project always compiles the examples
-and the tests before starting up the REPL, so they are always freshly available
-to developers.
+For convenience, the Clojure protobuf project itself always compiles the
+examples and the tests before starting up the REPL, so they are always freshly
+available to the project contributors.
 </blockquote>
 
 
@@ -261,8 +261,8 @@ Then we'll import the generated Java classes we want to use:
 protobuf.examples.tutorial.AddressBookProtos$AddressBook
 ```
 
-Note that for nested inner classes, we simply keep using the inner class
-separator `$` of Clojure's Java inter-op.
+Note that for nested inner classes, we simply use the inner class separator
+`$` of Clojure's Java inter-op.
 
 
 We can view the full, nested data schema in Clojure data:
