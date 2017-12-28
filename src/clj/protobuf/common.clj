@@ -43,6 +43,7 @@
 
 (def persistent-map-behaviour
   {:assoc (fn [this k v] (.assoc (get-instance this) k v))
+   :assocEx (fn [m k v] (throw (new Exception)))
    :without (fn [this k] (.without (get-instance this) k))})
 
 (def printable-behaviour

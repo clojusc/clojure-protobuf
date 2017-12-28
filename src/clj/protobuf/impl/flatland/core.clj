@@ -66,6 +66,8 @@
     (common/get-class this)
     ((:assoc common/persistent-map-behaviour) this k v)))
 
+(def -assocEx (:assocEx common/persistent-map-behaviour))
+
 (defn -without
   [this k]
   (new protobuf.impl.flatland.core.FlatlandProtoBuf
