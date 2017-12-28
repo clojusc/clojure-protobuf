@@ -21,7 +21,7 @@
   <li>the <a href="https://developers.google.com/protocol-buffers/docs/reference/java-generated">Java Generated Code Guide</a></li>
 </ul>
 <h2><a href="#why-use-protocol-buffers-" name="why-use-protocol-buffers-"></a>Why Use Protocol Buffers?</h2>
-<p>Protocol buffers solve the problem of efficiently serializing and deserializing structured data in a language-agnostic manner, accessible a vast array of applications (as long as the applications are written in a language that has a protobuf library). We’ll illustrate this with an example.</p>
+<p>Protocol buffers solve the problem of efficiently serializing and deserializing structured data in a language-agnostic manner, accessible to a vast array of applications (as long as the applications are written in a language that has a protobuf library). We’ll illustrate this with an example.</p>
 <p>The example we’re going to use is a very simple “address book” application that can read and write people’s contact details to and from a file. Each person in the address book has a name, an ID, an email address, and a contact phone number.</p>
 <p>So, how might one serialize and retrieve structured data like this if protobuf wasn’t around? There are a few ways to solve this problem:</p>
 <ul>
@@ -106,7 +106,7 @@ AddressBookProtos.java
     "target/examples"
     "target/testing"]}
 </code></pre>
-<p></p><blockquote> For convenience, the Clojure protobuf project always compiles the examples and the tests before starting up the REPL, so they are always freshly available to developers. </blockquote><p></p>
+<p></p><blockquote> For convenience, the Clojure protobuf project itself always compiles the examples and the tests before starting up the REPL, so they are always freshly available to the project contributors. </blockquote><p></p>
 <h2><a href="#the-protocol-buffer-api" name="the-protocol-buffer-api"></a>The Protocol Buffer API</h2>
 <p>Let’s fire up the REPL and see how to use the compiled code from Clojure:</p>
 <pre><code class="bash">$ lein repl
@@ -124,7 +124,7 @@ nil
                              AddressBookProtos$AddressBook))
 protobuf.examples.tutorial.AddressBookProtos$AddressBook
 </code></pre>
-<p>Note that for nested inner classes, we simply keep using the inner class separator <code>$</code> of Clojure’s Java inter-op.</p>
+<p>Note that for nested inner classes, we simply use the inner class separator <code>$</code> of Clojure’s Java inter-op.</p>
 <p>We can view the full, nested data schema in Clojure data:</p>
 <pre><code class="clj">[protobuf.dev] λ=&gt; (pprint (protobuf/schema AddressBookProtos$AddressBook))
 {:type :struct,
