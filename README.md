@@ -117,6 +117,25 @@ previous reference documentation, visit the
 * Documentation for the two Java classes (see the "javadoc" link there)
 
 
+## Versions
+
+(AKA "mini" ChangeLog)
+
+
+| Version             | Notes
+|---------------------|------------------------------------------------------
+| 3.5.1-v1.1-SNAPSHOT | Added docs, more func renames, new abstraction layer, improved DevEx of API
+| 3.5.1-v1.0          | Droped extra deps, renamed functions
+| 3.5.1-v0.3          | Bumped to use the latest Google Protocol Buffer release, re-added tests, Travis CI support
+| 3.4.0-v0.2          | Transition release; identical to the ghaskins clojure-protobuf at version  3.4.0-2-SNAPSHOT
+
+A note on the history: This project picked up the Clojure protobuf code base
+from the [ghaskins fork](https://github.com/ghaskins/clojure-protobuf); its
+last significant update was 2 years prior. The work at that point had been
+given the version "3.4.0-2-SNAPSHOT", tracking the Protocol Buffer release of
+3.4.0. We created a branch and tag for that release with no changes other than
+the org/artifact id.
+
 <!-- Named page links below: /-->
 
 [travis]: https://travis-ci.org/clojusc/protobuf
