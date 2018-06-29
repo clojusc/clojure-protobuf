@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +62,12 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
       /**
        * Given a Clojure map key, return the string to be used as the protobuf message field name.
        */
-      String protoName(Object clojureName);
+      String protoName(Descriptors.FieldDescriptor fieldDescriptor, Object clojureName);
 
       /**
        * Given a protobuf message field name, return a Clojure object suitable for use as a map key.
        */
-      Object clojureName(String protoName);
+      Object clojureName(Descriptors.FieldDescriptor fieldDescriptor, String protoName);
     }
 
     // we want this to work for anything Named, so use clojure.core/name
@@ -82,13 +83,13 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
 
     public static final NamingStrategy protobufNames = new NamingStrategy() {
       @Override
-      public String protoName(Object name) {
+      public String protoName(Descriptors.FieldDescriptor fieldDescriptor, Object name) {
         return nameStr(name);
       }
 
       @Override
-      public Object clojureName(String name) {
-        return Keyword.intern(name.toLowerCase());
+      public Object clojureName(Descriptors.FieldDescriptor fieldDescriptor, String name) {
+        return Keyword.intern(name);
       }
 
       @Override
@@ -97,14 +98,57 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
       }
     };
     public static final NamingStrategy convertUnderscores = new NamingStrategy() {
+      // FieldDescriptor -> (ProtoName, ClojureName)
+      Map<Descriptors.FieldDescriptor, Map<String, Keyword>> enumMappingsByProtoName = new HashMap<>();
+      // FieldDescriptor -> (CloureName, ProtoName)
+      Map<Descriptors.FieldDescriptor, Map<Keyword, String>> enumMappingsByClojureName = new HashMap<>();
+
+      private void buildEnumMapping(Descriptors.FieldDescriptor descriptor) {
+        Map<String, Keyword> protoClojureMapping = new HashMap<>();
+        Map<Keyword, String> clojureProtoMapping = new HashMap<>();
+
+        for (Descriptors.EnumValueDescriptor value : descriptor.getEnumType().getValues()) {
+          String protoName = nameStr(value.getName());
+          Keyword clojureName = Keyword.intern(protoName.replaceAll("_", "-").toLowerCase());
+          protoClojureMapping.put(protoName, clojureName);
+          clojureProtoMapping.put(clojureName, protoName);
+        }
+
+        enumMappingsByProtoName.put(descriptor, protoClojureMapping);
+        enumMappingsByClojureName.put(descriptor, clojureProtoMapping);
+      }
+
+      /**
+       * Since enum values can be keywords or strings, we must coerce to keyword
+       */
+      private Object asKeyword(Object name) {
+        if (name instanceof Keyword) {
+          return name;
+        } else {
+          return Keyword.intern(nameStr(name));
+        }
+      }
+
       @Override
-      public String protoName(Object name) {
+      public String protoName(Descriptors.FieldDescriptor fieldDescriptor, Object name) {
+         if (fieldDescriptor != null && fieldDescriptor.getJavaType() == Descriptors.FieldDescriptor.JavaType.ENUM) {
+           if (!enumMappingsByClojureName.containsKey(fieldDescriptor)) {
+             buildEnumMapping(fieldDescriptor);
+           }
+           return enumMappingsByClojureName.get(fieldDescriptor).get(asKeyword(name));
+         }
         return nameStr(name).replaceAll("-", "_");
       }
 
       @Override
-      public Object clojureName(String name) {
-        return Keyword.intern(name.replaceAll("_", "-").toLowerCase());
+      public Object clojureName(Descriptors.FieldDescriptor fieldDescriptor, String name) {
+        if (fieldDescriptor != null && fieldDescriptor.getJavaType() == Descriptors.FieldDescriptor.JavaType.ENUM) {
+          if (!enumMappingsByProtoName.containsKey(fieldDescriptor)) {
+            buildEnumMapping(fieldDescriptor);
+          }
+          return enumMappingsByProtoName.get(fieldDescriptor).get(name);
+        }
+        return  Keyword.intern(name.replaceAll("_", "-").toLowerCase());
       }
 
       @Override
@@ -200,7 +244,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
           }
           return (Descriptors.FieldDescriptor)field;
         } else {
-          field = type.findFieldByName(namingStrategy.protoName(key));
+          field = type.findFieldByName(namingStrategy.protoName(null, key));
           key_to_field.putIfAbsent(key, field == null ? NULL : field);
         }
         return (Descriptors.FieldDescriptor)field;
@@ -236,7 +280,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
         if (name == "") {
           clojureName = nullv;
         } else {
-          clojureName = namingStrategy.clojureName(name);
+          clojureName = namingStrategy.clojureName(null, name);
           if (clojureName == null) {
             clojureName = nullv;
           }
@@ -536,7 +580,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
       case DOUBLE:
         return ((Number)value).doubleValue();
       case ENUM:
-        String name = def.namingStrategy.protoName(value);
+        String name = def.namingStrategy.protoName(field, value);
         Descriptors.EnumDescriptor enum_type = field.getEnumType();
         Descriptors.EnumValueDescriptor enum_value = enum_type.findValueByName(name);
         if (enum_value == null) {
@@ -626,7 +670,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
       } else {
         Object map_field_by = def.mapFieldBy(field);
         if (map_field_by != null) {
-          String field_name = def.namingStrategy.protoName(map_field_by);
+          String field_name = def.namingStrategy.protoName(field, map_field_by);
           for (ISeq s = RT.seq(value); s != null; s = s.next()) {
             Map.Entry<?, ?> e = (Map.Entry<?, ?>)s.first();
             IPersistentMap map = (IPersistentMap)e.getValue();

@@ -11,6 +11,7 @@
   :path "/photos/h2k3j4h9h23"
   :labels #{"hawaii" "family" "surfing"},
   :attrs {"color space" "RGB" "dimensions" "1632x1224" "alpha" "no"},
+  :type :jpeg
   :tags {
     4 {
       :person-id 4
