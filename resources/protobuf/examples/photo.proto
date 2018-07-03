@@ -1,3 +1,4 @@
+syntax = "proto2";
 package protobuf.examples.photo;
 
 import "protobuf/extensions.proto";
@@ -11,6 +12,13 @@ message Photo {
   repeated Attr   attrs  = 4 [(map)    = true];
   repeated Tag    tags   = 5 [(map_by) = "person_id"];
   optional bytes  image  = 6;
+  optional Type   type   = 7;
+
+  enum Type {
+    JPEG = 0;
+    PNG = 1;
+    GIF = 2;
+  }
 
   message Label {
     required string item   = 1;
