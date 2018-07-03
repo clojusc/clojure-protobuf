@@ -61,7 +61,7 @@ Now you can use the protocol buffer in Clojure:
 
 ```clojure
 (require '[protobuf.core :as protobuf])
-(import (your.namespace.person Example$Person)
+(import '(your.namespace.person Example$Person)
 
 (def alice (protobuf/create Example$Person
                             {:id 108
