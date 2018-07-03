@@ -291,8 +291,7 @@ We can view the full, nested data schema in Clojure data:
         :type
         {:type :enum,
          :values #{:home :work :mobile},
-         :default
-         #object[com.google.protobuf.Descriptors$EnumValueDescriptor 0x1df8368f "HOME"]}}}}}}}}}
+         :default :home}}}}}}}}}
 nil
 ```
 
