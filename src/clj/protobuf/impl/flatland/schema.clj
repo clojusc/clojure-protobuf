@@ -61,7 +61,9 @@
                                          (.. field getEnumType getValues)))}
              {:type java-type})
            (when (.hasDefaultValue field)
-             {:default (.getDefaultValue field)})
+             {:default (case java-type
+                         :enum (keyword (str (.getDefaultValue field)))
+                         (.getDefaultValue field))})
            (when meta-string
              (read-string meta-string)))))
 
