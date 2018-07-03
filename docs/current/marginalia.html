@@ -3079,7 +3079,9 @@ net.brehaut.ClojureTools = (function (SH) {
                                          (.. field getEnumType getValues)))}
              {:type java-type})
            (when (.hasDefaultValue field)
-             {:default (.getDefaultValue field)})
+             {:default (case java-type
+                         :enum (keyword (str (.getDefaultValue field)))
+                         (.getDefaultValue field))})
            (when meta-string
              (read-string meta-string)))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn subfield
