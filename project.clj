@@ -1,4 +1,4 @@
-(defproject clojusc/protobuf "3.5.1-v1.1"
+(defproject clojusc/protobuf "3.6.0-v1.2-SNAPSHOT"
   :description "A Clojure interface to Google's protocol buffers"
   :url "https://github.com/clojusc/protobuf"
   :license {
@@ -7,7 +7,7 @@
   :exclusions [
     [org.clojure/clojure]]
   :dependencies [
-    [com.google.protobuf/protobuf-java "3.5.1"]
+    [com.google.protobuf/protobuf-java "3.6.0"]
     [gloss "0.2.6"]
     [org.clojure/clojure "1.8.0"]
     [org.flatland/io "0.3.0"]]
@@ -27,7 +27,7 @@
                        "\u001B[35m]\u001B[33m λ\u001B[m=> ")}}
     :test {
       :plugins [
-        [jonase/eastwood "0.2.5"]
+        [jonase/eastwood "0.2.6"]
         [lein-ancient "0.6.15"]
         [lein-shell "0.5.0"]]
       :java-source-paths [
@@ -37,7 +37,7 @@
       :dependencies [
         [clojang/codox-theme "0.2.0-SNAPSHOT"]]
       :plugins [
-        [lein-codox "0.10.3"]
+        [lein-codox "0.10.4"]
         [lein-marginalia "0.9.1"]]
       :codox {
         :project {
