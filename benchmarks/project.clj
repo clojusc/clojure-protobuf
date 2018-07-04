@@ -8,7 +8,6 @@
     [lein-ancient "0.6.15"]
     [lein-shell "0.5.0"]]
   :java-source-paths ["src/java"]
-  :main com.google.protocolbuffers.ProtoBench
   :profiles {
     :ubercompile {
       :aot :all}}
@@ -19,9 +18,8 @@
       "+ubercompile"
       "compile"]
     ;; Protobuf compilation tasks
-    "protoc-benchmarks" [
-      "shell"
-      "bin/compile-protobufs"]
+    "protoc-compile" [
+      "shell" "make" "compile-protobufs"]
     ;; Deps
     "check-deps" [
       "ancient"
@@ -29,11 +27,21 @@
       ":all"]
     ;; Benchmarking
     "java-benchmark" [
-      "shell"
-      "bin/java-benchmark"]
+      "shell" "make" "java-benchmark"]
     "bench" [
       "do"
         ["clean"]
-        ["protoc-benchmarks"]
+        ["protoc-compile"]
         ["uberjar"]
-        ["java-benchmark"]]})
+        ["java-benchmark"]]
+    "get-big" [
+      "shell" "make" "resources/datasets/bigdata"]
+    "bench-big" [
+      "do"
+        ["clean"]
+        ["get-big"]
+        ["protoc-compile"]
+        ["uberjar"]
+        ["java-benchmark"]]
+    "clean-big" [
+      "shell" "make" "clean"]})
