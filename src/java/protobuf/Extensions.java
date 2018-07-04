@@ -6,7 +6,7 @@ package protobuf;
 public final class Extensions {
   private Extensions() {}
   public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
+      com.google.protobuf.ExtensionRegistryLite registry) {
     registry.add(protobuf.Extensions.set);
     registry.add(protobuf.Extensions.map);
     registry.add(protobuf.Extensions.mapBy);
@@ -22,6 +22,12 @@ public final class Extensions {
     registry.add(protobuf.Extensions.nullFloat);
     registry.add(protobuf.Extensions.nullDouble);
     registry.add(protobuf.Extensions.nullEnum);
+  }
+
+  public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions(
+        (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   public static final int SET_FIELD_NUMBER = 52001;
   /**
@@ -193,7 +199,7 @@ public final class Extensions {
       getDescriptor() {
     return descriptor;
   }
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
     java.lang.String[] descriptorData = {
@@ -206,7 +212,7 @@ public final class Extensions {
       "ions\030\244\226\003 \001(\010:3\n\nsuccession\022\035.google.prot" +
       "obuf.FieldOptions\030\245\226\003 \001(\010:4\n\013map_deleted" +
       "\022\035.google.protobuf.FieldOptions\030\246\226\003 \001(\t:" +
-      "3\n\nmap_exists\022\035.google.protobuf.FieldOpt",
+      "3\n\nmap_exists\022\035.google.protobuf.FieldOpt" +
       "ions\030\247\226\003 \001(\t:-\n\004meta\022\035.google.protobuf.F" +
       "ieldOptions\030\252\226\003 \001(\t:1\n\010nullable\022\035.google" +
       ".protobuf.FieldOptions\030\264\226\003 \001(\010:4\n\013null_s" +
@@ -216,7 +222,7 @@ public final class Extensions {
       "otobuf.FieldOptions\030\267\226\003 \001(\022:3\n\nnull_floa" +
       "t\022\035.google.protobuf.FieldOptions\030\270\226\003 \001(\002" +
       ":4\n\013null_double\022\035.google.protobuf.FieldO" +
-      "ptions\030\271\226\003 \001(\001:2\n\tnull_enum\022\035.google.pro",
+      "ptions\030\271\226\003 \001(\001:2\n\tnull_enum\022\035.google.pro" +
       "tobuf.FieldOptions\030\272\226\003 \001(\rB\026\n\010protobufB\n" +
       "Extensions"
     };

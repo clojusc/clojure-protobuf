@@ -1,3 +1,5 @@
+syntax = "proto2";
+
 package protobuf.examples.person;
 
 option java_outer_classname = "Example";

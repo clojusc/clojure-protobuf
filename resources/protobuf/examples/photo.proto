@@ -1,4 +1,5 @@
 syntax = "proto2";
+
 package protobuf.examples.photo;
 
 import "protobuf/extensions.proto";
