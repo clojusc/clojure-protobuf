@@ -1,1 +1,4 @@
-dataset.google_message*.pb
+/resources/datasets/bigdata/dataset.google_message*.pb
+/src/java/benchmarks
+/src/java/com/google/protobuf/benchmarks
+/target

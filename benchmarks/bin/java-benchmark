@@ -1,0 +1,21 @@
+#! /bin/bash
+
+CPU_COUNT=4
+ALL_FILES=`find . -type f -name "dataset.*.pb" -not -path "./tmp/*"`
+ALL_DATA=()
+for FILE in $ALL_FILES; do
+    ALL_DATA+="$FILE,";
+done
+
+echo
+echo "Running benchmarks against this data:"
+echo "$ALL_DATA"
+echo
+
+_JAVA_OPTIONS="-XX:CICompilerCount=$CPU_COUNT" \
+java -cp target/protobuf-java-benchmark-*-standalone.jar \
+  com.google.caliper.runner.CaliperMain com.google.protobuf.ProtoCaliperBenchmark -i runtime \
+  -b serializeToByteArray,serializeToMemoryStream,deserializeFromByteArray,deserializeFromMemoryStream \
+  -DdataFile=${ALL_DATA:0:-1}
+
+#-b serializeToByteString,serializeToByteArray,serializeToMemoryStream,deserializeFromByteString,deserializeFromByteArray,deserializeFromMemoryStream \

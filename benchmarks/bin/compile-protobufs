@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+OUT_DIR=src/java
+PROTO_FILES=`find resources -name "*.proto"`
+
+mkdir -p $OUT_DIR
+
+protoc \
+  -I=/usr/include \
+  -I=/usr/local/include \
+  -I=resources \
+  --java_out=$OUT_DIR \
+  $PROTO_FILES
