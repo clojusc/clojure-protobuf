@@ -80,3 +80,15 @@ Additionally, converting between protobuf bytes and Clojure data is trivial:
 [protobuf.dev] λ=> (protobuf/bytes-> p b)
 {:id 108, :name "Alice", :email "alice@example.com"}
 ```
+
+## Streams and Bytes
+
+In addition to creating a protobuf instance from a Clojure map, Clojure
+protobuf also supports passing the following to the `create` function:
+
+* A Java byte array (i.e., of type `[B`)
+* A `java.io.InputStream`
+* A `com.google.protobuf.CodedInputStream`
+
+Just as with the creating one with a map, a protobuf class is expected as
+the first parameter.
