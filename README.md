@@ -69,7 +69,7 @@ Now you can use the protocol buffer in Clojure:
                              :email "alice@example.com"}))
 ```
 
-Makes some changes to the data and serialize to bytes:
+Make some changes to the data and serialize to bytes:
 
 ```clj
 (def b (-> alice
