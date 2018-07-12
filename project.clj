@@ -29,6 +29,7 @@
       :plugins [
         [jonase/eastwood "0.2.6"]
         [lein-ancient "0.6.15"]
+        [lein-ltest "0.3.0"]
         [lein-shell "0.5.0"]]
       :java-source-paths [
         "target/examples"
@@ -53,6 +54,7 @@
     :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
     :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
     :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+    :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
     :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
     ;; Dev tasks
@@ -117,15 +119,31 @@
       "+test"
       "eastwood"
       "{:namespaces [:source-paths] :source-paths [\"src/clj\"]}"]
-    "test-all" [
+    "ltest" [
       "with-profile"
-      "+1.5:+1.6:+1.7:+1.9:+default"
+      "+test"
+      "ltest"]
+    "test-old-clojure" [
+      "with-profile"
+      "+test,+1.5:+test,+1.6:+test,+1.7"
       "test"]
+    "test-new-clojure" [
+      "with-profile"
+      "+test,+1.8:+test,+1.9"
+      "ltest"]
+    "test-all" [
+      "do"
+      ["clean"]
+      ["protoc-all"]
+      ["test-old-clojure"]
+      ["clean"]
+      ["protoc-all"]
+      ["test-new-clojure"]]
     "clean-test" [
       "do"
       ["clean"]
       ["protoc-all"]
-      ["test"]]
+      ["ltest"]]
     "clean-test-all" [
       "do"
       ["clean"]
