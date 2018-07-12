@@ -43,5 +43,7 @@
   ([protobuf-class]
     (create protobuf-class {}))
   ([protobuf-class data]
-    (case (get-impl)
+    (create (get-impl) protobuf-class data))
+  ([impl-key protobuf-class data]
+    (case impl-key
       :flatland (new FlatlandProtoBuf protobuf-class data))))
