@@ -76,6 +76,10 @@
     (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
       (PersistentProtocolBufferMap/parseFrom map-def in))))
 
+(defmethod parse CodedInputStream
+  [^PersistentProtocolBufferMap$Def map-def ^CodedInputStream stream]
+  (PersistentProtocolBufferMap/parseFrom map-def stream))
+
 (defn ^"[B" ->bytes
   "Return the byte representation of the given protobuf."
   [^PersistentProtocolBufferMap$Def map-def m]

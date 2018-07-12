@@ -11,6 +11,9 @@
     [protobuf.common :as common]
     [protobuf.impl.flatland.map :as protobuf-map]
     [protobuf.impl.flatland.mapdef :as protobuf])
+  (:import
+    (com.google.protobuf.CodedInputStream)
+    (java.io.InputStream))
   (:gen-class
     :name protobuf.impl.flatland.core.FlatlandProtoBuf
     :implements [clojure.lang.Associative
@@ -21,16 +24,18 @@
                  java.lang.Iterable]
     :init init
     :constructors {[java.lang.Class clojure.lang.APersistentMap] []
-                   [java.lang.Class "[B"] []}
+                   [java.lang.Class "[B"] []
+                   [java.lang.Class com.google.protobuf.CodedInputStream] []
+                   [java.lang.Class java.io.InputStream] []}
     :methods [^:static [schema [Object] Object]]
     :state contents
     :main false))
 
 (defn- get-instance
   [wrapper data]
-  (if (= (Class/forName "[B") (type data))
-    (protobuf/parse wrapper data)
-    (protobuf/create wrapper data)))
+  (if (map? data)
+    (protobuf/create wrapper data)
+    (protobuf/parse wrapper data)))
 
 (defn- wrap-all
   [protobuf-class java-wrapper instance]
