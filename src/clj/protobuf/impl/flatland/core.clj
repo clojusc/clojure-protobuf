@@ -20,19 +20,30 @@
                  clojure.lang.Seqable
                  java.lang.Iterable]
     :init init
-    :constructors {[java.lang.Class
-                    clojure.lang.APersistentMap]
-                   []}
+    :constructors {[java.lang.Class clojure.lang.APersistentMap] []
+                   [java.lang.Class "[B"] []}
     :methods [^:static [schema [Object] Object]]
     :state contents
     :main false))
 
+(defn- get-instance
+  [wrapper data]
+  (if (= (Class/forName "[B") (type data))
+    (protobuf/parse wrapper data)
+    (protobuf/create wrapper data)))
+
+(defn- wrap-all
+  [protobuf-class java-wrapper instance]
+  {:instance instance
+   :java-wrapper java-wrapper
+   :protobuf-class protobuf-class})
+
 (defn -init
   [protobuf-class data]
   (let [wrapper (protobuf/mapdef protobuf-class)]
-    [[] {:instance (protobuf/create wrapper data)
-         :java-wrapper wrapper
-         :protobuf-class protobuf-class}]))
+    [[] (wrap-all protobuf-class
+                  wrapper
+                  (get-instance wrapper data))]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   clojure.lang.Associative   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
