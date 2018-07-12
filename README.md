@@ -124,7 +124,7 @@ previous reference documentation, visit the
 
 | Version             | Notes
 |---------------------|------------------------------------------------------
-| 3.6.0-v1.2-SNAPSHOT | Bumped to latest release of protobuf-java (see the branch [release/1.2.x](https://github.com/clojusc/protobuf/tree/release/1.2.x)), added benchmarking
+| 3.6.0-v1.2-SNAPSHOT | Bumped to latest release of protobuf-java (see the branch [release/1.2.x](https://github.com/clojusc/protobuf/tree/release/1.2.x)), added byte and stream support in constructors, added benchmarking
 | 3.5.1-v1.1          | Added docs, more func renames, new abstraction layer, improved DevEx of API, and fix for enums as Clojure keywords
 | 3.5.1-v1.0          | Droped extra deps, renamed functions
 | 3.5.1-v0.3          | Bumped to latest release of protobuf-java, re-added tests, Travis CI support
