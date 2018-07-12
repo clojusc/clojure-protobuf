@@ -51,4 +51,12 @@ protobuf.examples.person.Example$Person
 #object["[B" 0x7e3a40eb "[B@7e3a40eb"]
 [protobuf.dev] λ=&gt; (protobuf/bytes-&gt; p b)
 {:id 108, :name "Alice", :email "alice@example.com"}
-</code></pre></div></div></div></body></html>
+</code></pre>
+<h2><a href="#streams-and-bytes" name="streams-and-bytes"></a>Streams and Bytes</h2>
+<p>In addition to creating a protobuf instance from a Clojure map, Clojure protobuf also supports passing the following to the <code>create</code> function:</p>
+<ul>
+  <li>A Java byte array (i.e., of type <code>[B</code>)</li>
+  <li>A <code>java.io.InputStream</code></li>
+  <li>A <code>com.google.protobuf.CodedInputStream</code></li>
+</ul>
+<p>Just as with the creating one with a map, a protobuf class is expected as the first parameter.</p></div></div></div></body></html>

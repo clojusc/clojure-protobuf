@@ -2866,7 +2866,7 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>Clojure Protocol Buffer Library -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/clojusc/protobuf">Clojure Protocol Buffer Library</a></h1><h2 class="project-version">3.6.0-v1.2-SNAPSHOT</h2><br /><p>A Clojure interface to Google's protocol buffers</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">com.google.protobuf/protobuf-java</td><td class="dotted"><hr /></td><td class="dep-version">3.6.0</td></tr><tr><td class="dep-name">gloss</td><td class="dotted"><hr /></td><td class="dep-version">0.2.6</td></tr><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.8.0</td></tr><tr><td class="dep-name">org.flatland/io</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#protobuf.util">protobuf.util</a></li><li><a href="#protobuf.impl.flatland.schema">protobuf.impl.flatland.schema</a></li><li><a href="#protobuf.impl.flatland.codec">protobuf.impl.flatland.codec</a></li><li><a href="#protobuf.impl.flatland.core">protobuf.impl.flatland.core</a></li><li><a href="#protobuf.impl.flatland.map">protobuf.impl.flatland.map</a></li><li><a href="#protobuf.impl.flatland.mapdef">protobuf.impl.flatland.mapdef</a></li><li><a href="#protobuf.core">protobuf.core</a></li><li><a href="#protobuf.common">protobuf.common</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.util" name="protobuf.util"><h1 class="project-name">protobuf.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">com.google.protobuf/protobuf-java</td><td class="dotted"><hr /></td><td class="dep-version">3.6.0</td></tr><tr><td class="dep-name">gloss</td><td class="dotted"><hr /></td><td class="dep-version">0.2.6</td></tr><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.9.0</td></tr><tr><td class="dep-name">org.flatland/io</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#protobuf.util">protobuf.util</a></li><li><a href="#protobuf.impl.flatland.schema">protobuf.impl.flatland.schema</a></li><li><a href="#protobuf.impl.flatland.codec">protobuf.impl.flatland.codec</a></li><li><a href="#protobuf.impl.flatland.core">protobuf.impl.flatland.core</a></li><li><a href="#protobuf.impl.flatland.map">protobuf.impl.flatland.map</a></li><li><a href="#protobuf.impl.flatland.mapdef">protobuf.impl.flatland.mapdef</a></li><li><a href="#protobuf.core">protobuf.core</a></li><li><a href="#protobuf.common">protobuf.common</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.util" name="protobuf.util"><h1 class="project-name">protobuf.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns protobuf.util
   (:import
     (clojure.lang IDeref
@@ -3201,6 +3201,9 @@ net.brehaut.ClojureTools = (function (SH) {
     [protobuf.common :as common]
     [protobuf.impl.flatland.map :as protobuf-map]
     [protobuf.impl.flatland.mapdef :as protobuf])
+  (:import
+    (com.google.protobuf.CodedInputStream)
+    (java.io.InputStream))
   (:gen-class
     :name protobuf.impl.flatland.core.FlatlandProtoBuf
     :implements [clojure.lang.Associative
@@ -3210,18 +3213,29 @@ net.brehaut.ClojureTools = (function (SH) {
                  clojure.lang.Seqable
                  java.lang.Iterable]
     :init init
-    :constructors {[java.lang.Class
-                    clojure.lang.APersistentMap]
-                   []}
+    :constructors {[java.lang.Class clojure.lang.APersistentMap] []
+                   [java.lang.Class &quot;[B&quot;] []
+                   [java.lang.Class com.google.protobuf.CodedInputStream] []
+                   [java.lang.Class java.io.InputStream] []}
     :methods [^:static [schema [Object] Object]]
     :state contents
     :main false))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- get-instance
+  [wrapper data]
+  (if (map? data)
+    (protobuf/create wrapper data)
+    (protobuf/parse wrapper data)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- wrap-all
+  [protobuf-class java-wrapper instance]
+  {:instance instance
+   :java-wrapper java-wrapper
+   :protobuf-class protobuf-class})</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn -init
   [protobuf-class data]
   (let [wrapper (protobuf/mapdef protobuf-class)]
-    [[] {:instance (protobuf/create wrapper data)
-         :java-wrapper wrapper
-         :protobuf-class protobuf-class}]))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.Associative   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+    [[] (wrap-all protobuf-class
+                  wrapper
+                  (get-instance wrapper data))]))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.Associative   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def -containsKey (:containsKey common/associative-behaviour))
 (def -entryAt (:entryAt common/associative-behaviour))</pre></td></tr><tr><td class="docs"><p>  clojure.lang.ILookup   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
@@ -3352,7 +3366,10 @@ net.brehaut.ClojureTools = (function (SH) {
   [^PersistentProtocolBufferMap$Def map-def stream]
   (when stream
     (let [^CodedInputStream in (CodedInputStream/newInstance stream)]
-      (PersistentProtocolBufferMap/parseFrom map-def in))))</pre></td></tr><tr><td class="docs"><p>Return the byte representation of the given protobuf.</p>
+      (PersistentProtocolBufferMap/parseFrom map-def in))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod parse CodedInputStream
+  [^PersistentProtocolBufferMap$Def map-def ^CodedInputStream stream]
+  (PersistentProtocolBufferMap/parseFrom map-def stream))</pre></td></tr><tr><td class="docs"><p>Return the byte representation of the given protobuf.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn ^&quot;[B&quot; -&gt;bytes
   [^PersistentProtocolBufferMap$Def map-def m]
   (protobuf-map/-&gt;bytes (PersistentProtocolBufferMap/construct map-def m)))</pre></td></tr><tr><td class="docs"><p>Lazily read a sequence of length-delimited protobufs of the specified map-def
@@ -3415,7 +3432,9 @@ net.brehaut.ClojureTools = (function (SH) {
   ([protobuf-class]
     (create protobuf-class {}))
   ([protobuf-class data]
-    (case (get-impl)
+    (create (get-impl) protobuf-class data))
+  ([impl-key protobuf-class data]
+    (case impl-key
       :flatland (new FlatlandProtoBuf protobuf-class data))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#protobuf.common" name="protobuf.common"><h1 class="project-name">protobuf.common</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns protobuf.common)</pre></td></tr><tr><td class="docs"><p>  Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
