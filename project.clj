@@ -9,7 +9,7 @@
   :dependencies [
     [com.google.protobuf/protobuf-java "3.6.0"]
     [gloss "0.2.6"]
-    [org.clojure/clojure "1.8.0"]
+    [org.clojure/clojure "1.9.0"]
     [org.flatland/io "0.3.0"]]
   :source-paths ["src/clj"]
   :java-source-paths ["src/java"]
@@ -27,7 +27,7 @@
                        "\u001B[35m]\u001B[33m λ\u001B[m=> ")}}
     :test {
       :plugins [
-        [jonase/eastwood "0.2.6"]
+        [jonase/eastwood "0.2.8"]
         [lein-ancient "0.6.15"]
         [lein-ltest "0.3.0"]
         [lein-shell "0.5.0"]]
