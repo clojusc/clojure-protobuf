@@ -72,7 +72,9 @@
   decode #'gloss-io/decode)
 
 ;; XXX what is this used for? Delete, if not used; add docstring if it is
-(defn codec-schema
+(defn ^{:doc "Unused function."
+        :deprecated "3.6.0-v1.2"}
+  codec-schema
   [proto]
   (util/dissoc-fields (protobuf/mapdef->schema proto)
                       len-key
