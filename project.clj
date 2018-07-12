@@ -122,7 +122,8 @@
     "ltest" [
       "with-profile"
       "+test"
-      "ltest"]
+      "do"
+      ["clean"] ["protoc-all"] ["ltest"]]
     "test-old-clojure" [
       "with-profile"
       "+test,+1.5:+test,+1.6:+test,+1.7"
