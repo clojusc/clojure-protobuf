@@ -1,7 +1,8 @@
 (ns protobuf.core
   "This is the public API for working with protocol buffers."
   (:require
-    [protobuf.impl.flatland.core :as flatland])
+    [protobuf.impl.flatland.core :as flatland]
+    [protobuf.impl.google.core :as google])
   (:import
     (protobuf.impl.flatland.core FlatlandProtoBuf))
   (:refer-clojure :exclude [map? read]))
@@ -37,7 +38,9 @@
   want to use the `->schema` method."
   [protobuf-class]
   (case (get-impl)
-    :flatland (FlatlandProtoBuf/schema protobuf-class)))
+    :flatland (FlatlandProtoBuf/schema protobuf-class)
+    :google (google/schema protobuf-class)
+    :unsupported-implementation))
 
 (defn create
   ([protobuf-class]
@@ -46,4 +49,5 @@
     (create (get-impl) protobuf-class data))
   ([impl-key protobuf-class data]
     (case impl-key
-      :flatland (new FlatlandProtoBuf protobuf-class data))))
+      :flatland (new FlatlandProtoBuf protobuf-class data)
+      :google (google/create protobuf-class data))))
