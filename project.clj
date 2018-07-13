@@ -11,7 +11,9 @@
     [gloss "0.2.6"]
     [org.clojure/clojure "1.9.0"]
     [org.flatland/io "0.3.0"]]
-  :source-paths ["src/clj"]
+  :source-paths [
+    "src/clj"
+    "target/extensions"]
   :java-source-paths ["src/java"]
   :jvm-opts ["-Dprotobuf.impl=flatland"]
   :aot [protobuf.impl.flatland.core]
@@ -87,26 +89,10 @@
         "--name" "Clojure Protocol Buffer Library"]
       ["javadocs"]]
     ;; Protobuf compilation tasks
-    "protoc-extension" [
-      "with-profile"
-      "+test"
-      "shell"
-      "bin/compile-protobuf-extension"]
-    "protoc-test" [
-       "with-profile"
-       "+test"
-       "shell"
-       "bin/compile-test-protobufs"]
-    "protoc-examples" [
-       "with-profile"
-       "+test"
-       "shell"
-       "bin/compile-example-protobufs"]
-    "protoc-all" [
-      "do"
-      ["protoc-extension"]
-      ["protoc-test"]
-      ["protoc-examples"]]
+    "protoc-examples" ["shell" "make" "examples"]
+    "protoc-extensions" ["shell" "make" "extensions"]
+    "protoc-testing" ["shell" "make" "testing"]
+    "protoc-all" ["shell" "make" "protobufs"]
     ;; Deps, linting, and tests
     "check-deps" [
       "with-profile"

@@ -62,8 +62,8 @@ files; as such, you will still need to compile them.
 We've found a clean way to do this (and how we set up the tests) is to:
 
 * put these `.java` files in an isolated directory
-* add that directory to a `:java-source-paths` entry in the `project.clj`
-* place that in an appropriate `project.clj` profile
+* add that directory to a `:java-source-paths` entry in your `project.clj`
+* keep things clean by placing that in a dedicated `project.clj` profile
 
 
 ## Usage
