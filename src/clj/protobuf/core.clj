@@ -1,17 +1,28 @@
 (ns protobuf.core
   "This is the public API for working with protocol buffers."
   (:require
+    [protobuf.common :as common]
     [protobuf.impl.flatland.core :as flatland])
   (:import
     (protobuf.impl.flatland.core FlatlandProtoBuf))
   (:refer-clojure :exclude [map? read]))
 
+(defprotocol ProtoBufCommonAPI
+  (get-class [this])
+  (get-instance [this])
+  (get-wrapper [this]))
+
 (defprotocol ProtoBufAPI
   (->bytes [this])
   (->schema [this])
   (bytes-> [this bytes])
+  (syntax [this])
   (read [this in])
   (write [this out]))
+
+(extend FlatlandProtoBuf
+        ProtoBufCommonAPI
+        common/common-behaviour)
 
 (extend FlatlandProtoBuf
         ProtoBufAPI

@@ -90,5 +90,5 @@ protobuf also supports passing the following to the `create` function:
 * A `java.io.InputStream`
 * A `com.google.protobuf.CodedInputStream`
 
-Just as with the creating one with a map, a protobuf class is expected as
+Just as with creating one with a map, a protobuf class is expected as
 the first parameter.

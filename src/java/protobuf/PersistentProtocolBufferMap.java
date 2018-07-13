@@ -158,6 +158,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
     };
 
     public final Descriptors.Descriptor type;
+    public final Descriptors.FileDescriptor file;
     public final NamingStrategy namingStrategy;
     public final int sizeLimit;
 
@@ -167,10 +168,13 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
 
     private static final class DefOptions {
       public final Descriptors.Descriptor type;
+      public final Descriptors.FileDescriptor file;
       public final NamingStrategy strat;
       public final int sizeLimit;
-      public DefOptions(Descriptors.Descriptor type, NamingStrategy strat, int sizeLimit) {
+      public DefOptions(Descriptors.Descriptor type, Descriptors.FileDescriptor file,
+      	                NamingStrategy strat, int sizeLimit) {
         this.type = type;
+        this.file = file;
         this.strat = strat;
         this.sizeLimit = sizeLimit;
       }
@@ -179,29 +183,35 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
         if (this.getClass() != other.getClass())
           return false;
         DefOptions od = (DefOptions)other;
-        return type.equals(od.type) && strat.equals(od.strat) && sizeLimit == od.sizeLimit;
+        return type.equals(od.type) &&
+               file.equals(od.file) &&
+               strat.equals(od.strat) &&
+               sizeLimit == od.sizeLimit;
       }
 
       public int hashCode() {
-        return type.hashCode() + strat.hashCode() + sizeLimit;
+        return type.hashCode() + file.hashCode() + strat.hashCode() + sizeLimit;
       }
     }
 
     static ConcurrentHashMap<DefOptions, Def> defCache = new ConcurrentHashMap<DefOptions, Def>();
 
-    public static Def create(Descriptors.Descriptor type, NamingStrategy strat, int sizeLimit) {
-      DefOptions opts = new DefOptions(type, strat, sizeLimit);
+    public static Def create(Descriptors.Descriptor type, Descriptors.FileDescriptor file,
+    	                     NamingStrategy strat, int sizeLimit) {
+      DefOptions opts = new DefOptions(type, file, strat, sizeLimit);
 
       Def def = defCache.get(type);
       if (def == null) {
-        def = new Def(type, strat, sizeLimit);
+        def = new Def(type, file, strat, sizeLimit);
         defCache.putIfAbsent(opts, def);
       }
       return def;
     }
 
-    protected Def(Descriptors.Descriptor type, NamingStrategy strat, int sizeLimit) {
+    protected Def(Descriptors.Descriptor type, Descriptors.FileDescriptor file,
+    	          NamingStrategy strat, int sizeLimit) {
       this.type = type;
+      this.file = file;
       this.key_to_field = new ConcurrentHashMap<Object, Object>();
       this.namingStrategy = strat;
       this.sizeLimit = sizeLimit;
@@ -533,6 +543,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
           }
         case MESSAGE:
           Def fieldDef = PersistentProtocolBufferMap.Def.create(field.getMessageType(),
+          	                                                    field.getFile(),
                                                                 this.def.namingStrategy,
                                                                 this.def.sizeLimit);
           DynamicMessage message = (DynamicMessage)value;
@@ -594,6 +605,7 @@ public class PersistentProtocolBufferMap extends APersistentMap implements IObj 
           protobuf = (PersistentProtocolBufferMap)value;
         } else {
           Def fieldDef = PersistentProtocolBufferMap.Def.create(field.getMessageType(),
+                                                                field.getFile(),
                                                                 this.def.namingStrategy,
                                                                 this.def.sizeLimit);
           protobuf = PersistentProtocolBufferMap.construct(fieldDef, value);

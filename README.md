@@ -6,13 +6,24 @@
 
 [![][logo]][logo-large]
 
+**Contents**
+
+* About
+* Getting Started
+* Usage
+* Documentation
+* Release Notes
+* Donating
+
+## Aboout
+
 This project provides a Clojure interface to Google's
 [protocol buffers](http://code.google.com/p/protobuf). Protocol buffers can be
 used to communicate with other languages over the network, and they are WAY
 faster to serialize and deserialize than standard Clojure objects.
 
 
-## Getting started
+## Getting Started
 
 Add the dependency to your `project.clj`:
 
@@ -117,10 +128,7 @@ previous reference documentation, visit the
 * Documentation for the two Java classes (see the "javadoc" link there)
 
 
-## Versions
-
-(AKA "mini" ChangeLog)
-
+## Release Notes
 
 | Version             | Notes
 |---------------------|------------------------------------------------------
@@ -137,6 +145,18 @@ given the version "3.4.0-2-SNAPSHOT", tracking the Protocol Buffer release of
 3.4.0. We created a branch and tag for that release with no changes other than
 the org/artifact id.
 
+
+## Donating
+
+At the [request of a user][donation-request], a donation account for project
+development has been set up on Liberapay here:
+
+* [https://liberapay.com/clojusc-protobuf/donate](https://liberapay.com/clojusc-protobuf/donate)
+
+You can learn more about Liberapay on its [Wikipedia entry][libera-wiki] or on the
+service's ["About" page][libera-about].
+
+
 <!-- Named page links below: /-->
 
 [travis]: https://travis-ci.org/clojusc/protobuf
@@ -151,3 +171,6 @@ the org/artifact id.
 [clojars]: https://clojars.org/clojusc/protobuf
 [clojars-badge]: https://img.shields.io/clojars/v/clojusc/protobuf.svg
 [docs]: https://clojusc.github.io/protobuf
+[donation-request]: https://github.com/clojusc/protobuf/issues/29
+[libera-wiki]: https://en.wikipedia.org/wiki/Liberapay
+[libera-about]: https://liberapay.com/about/
