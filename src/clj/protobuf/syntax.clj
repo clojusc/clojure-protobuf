@@ -5,7 +5,8 @@
   (:import
     (clojure.lang Keyword)
     (com.google.protobuf Descriptors$FileDescriptor
-                         Descriptors$FileDescriptor$Syntax)))
+                         Descriptors$FileDescriptor$Syntax))
+  (:refer-clojure :exclude [format]))
 
 (defn lookup
   [^Keyword syntax]
