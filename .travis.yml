@@ -1,10 +1,14 @@
 language: clojure
 sudo: false
-addons:
-  apt:
-    packages:
-      - protobuf-compiler
-      - libprotoc-dev
+before_install:
+  - export PATH=$HOME/protobuf/bin:$PATH
+  - export C_INCLUDE_PATH=$C_INCLUDE_PATH:$HOME/protobuf/include
+  - export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:$HOME/protobuf/include
+install:
+  - mkdir -p $HOME/protobuf && pushd $HOME/protobuf &&
+    curl -LO 'https://github.com/google/protobuf/releases/download/v3.6.0/protoc-3.6.0-linux-x86_64.zip' &&
+    unzip protoc-3.6.0-linux-x86_64.zip &&
+    popd
 script: lein build-test
 jdk:
   - oraclejdk8

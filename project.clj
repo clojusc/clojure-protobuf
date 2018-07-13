@@ -51,9 +51,9 @@
         :themes [:clojang]
         :doc-paths ["resources/docs"]
         :output-path "docs/current"}}
-    :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
-    :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
-    :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+    ; :1.5 {:dependencies [[org.clojure/clojure "1.5.0"]]}
+    ; :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
+    ; :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
     :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
     :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
@@ -126,7 +126,7 @@
       ["clean"] ["protoc-all"] ["ltest"]]
     "test-old-clojure" [
       "with-profile"
-      "+test,+1.5:+test,+1.6:+test,+1.7"
+      "+test,+1.7"
       "test"]
     "test-new-clojure" [
       "with-profile"
@@ -136,7 +136,7 @@
       "do"
       ["clean"]
       ["protoc-all"]
-      ["test-old-clojure"]
+      ; ["test-old-clojure"]
       ["clean"]
       ["protoc-all"]
       ["test-new-clojure"]]
@@ -156,5 +156,5 @@
       ["ubercompile"]
       ["clean"]
       ["protoc-all"]
-      ["test-all"]
+      ["test-new-clojure"]
       ["lint"]]})
