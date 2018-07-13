@@ -37,7 +37,7 @@
              (if (instance? Descriptors$Descriptor map-def)
                map-def
                (Reflector/invokeStaticMethod ^Class map-def "getDescriptor" (to-array nil)))]
-         (PersistentProtocolBufferMap$Def/create descriptor naming-strategy size-limit)))))
+         (PersistentProtocolBufferMap$Def/create descriptor (.getFile descriptor) naming-strategy size-limit)))))
 
 (defn create
   "Construct a protobuf of the given map-def."
@@ -105,6 +105,10 @@
      (doseq [^PersistentProtocolBufferMap p ps]
        (.writeDelimitedTo p out))
      (.flush out))))
+
+(defn syntax
+  [^PersistentProtocolBufferMap$Def map-def]
+  (.getSyntax (.file map-def)))
 
 (extend-protocol util/Combiner
   PersistentProtocolBufferMap

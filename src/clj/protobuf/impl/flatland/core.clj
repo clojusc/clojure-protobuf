@@ -10,7 +10,8 @@
   (:require
     [protobuf.common :as common]
     [protobuf.impl.flatland.map :as protobuf-map]
-    [protobuf.impl.flatland.mapdef :as protobuf])
+    [protobuf.impl.flatland.mapdef :as protobuf]
+    [protobuf.syntax :as syntax])
   (:import
     (com.google.protobuf.CodedInputStream)
     (java.io.InputStream))
@@ -128,6 +129,8 @@
              (new protobuf.impl.flatland.core.FlatlandProtoBuf
                (common/get-class this)
                (protobuf/parse (common/get-wrapper this) bytes)))
+   :syntax (fn [this]
+             (syntax/format (.getSyntax (.file (common/get-wrapper this)))))
    :read (fn [this in]
           (new protobuf.impl.flatland.core.FlatlandProtoBuf
             (common/get-class this)

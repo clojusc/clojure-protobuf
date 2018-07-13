@@ -20,6 +20,11 @@
 ;;;   Behaviours   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def common-behaviour
+  {:get-class get-class
+   :get-instance get-instance
+   :get-wrapper get-wrapper})
+
 (def associative-behaviour
   {:containsKey (fn [this data] (.containsKey (get-instance this) data))
    :entryAt (fn [this data] (.entryAt (get-instance this) data))})
