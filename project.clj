@@ -60,29 +60,15 @@
     :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}}
   :aliases {
     ;; Dev tasks
-    "ubercompile" [
-      "with-profile"
-      "+ubercompile"
-      "compile"]
-    "repl" [
-      "with-profile"
-      "+test,+custom-repl"
-      "do"
+    "ubercompile" ["with-profile" "+ubercompile" "compile"]
+    "repl" ["with-profile" "+test,+custom-repl" "do"
       ["clean"]
       ["protoc-all"]
       ["repl"]]
     ;; Doc-generation
-    "clojuredocs" [
-      "with-profile"
-      "+docs"
-      "codox"]
-    "javadocs" [
-      "with-profile"
-      "+test"
-      "shell"
-      "bin/javadoc"]
-    "docs" [
-      "do"
+    "clojuredocs" ["with-profile" "+docs" "codox"]
+    "javadocs" ["with-profile" "+test" "shell" "bin/javadoc"]
+    "docs" ["do"
       ["clojuredocs"]
       ["marg" "--dir" "docs/current"
         "--file" "marginalia.html"
@@ -94,50 +80,27 @@
     "protoc-testing" ["shell" "make" "testing"]
     "protoc-all" ["shell" "make" "protobufs"]
     ;; Deps, linting, and tests
-    "check-deps" [
-      "with-profile"
-      "+test"
-      "ancient"
-      "check"
-      ":all"]
+    "check-deps" ["with-profile" "+test" "ancient" "check" ":all"]
     "lint" [
       "with-profile"
       "+test"
       "eastwood"
       "{:namespaces [:source-paths] :source-paths [\"src/clj\"]}"]
-    "ltest" [
-      "with-profile"
-      "+test"
-      "do"
-      ["clean"] ["protoc-all"] ["ltest"]]
-    "test-old-clojure" [
-      "with-profile"
-      "+test,+1.7"
-      "test"]
-    "test-new-clojure" [
-      "with-profile"
-      "+test,+1.8:+test,+1.9"
-      "ltest"]
-    "test-all" [
-      "do"
-      ["clean"]
-      ["protoc-all"]
-      ; ["test-old-clojure"]
-      ["clean"]
-      ["protoc-all"]
-      ["test-new-clojure"]]
-    "clean-test" [
-      "do"
+    "ltest" ["with-profile" "+test" "ltest"]
+    "ltest-clean" ["do"
       ["clean"]
       ["protoc-all"]
       ["ltest"]]
-    "clean-test-all" [
-      "do"
+    "test-old-clojure" ["with-profile" "+test,+1.7" "test"]
+    "test-new-clojure" ["with-profile" "+test,+1.8:+test,+1.9" "ltest"]
+    "test-all" ["do"
       ["clean"]
       ["protoc-all"]
-      ["test-all"]]
-    "build-test" [
-      "do"
+      ["test-old-clojure"]
+      ["clean"]
+      ["protoc-all"]
+      ["test-new-clojure"]]
+    "build-test" ["do"
       ["clean"]
       ["ubercompile"]
       ["clean"]
