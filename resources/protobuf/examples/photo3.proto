@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package protobuf.examples.photo3;
+
+import "protobuf/extensions.proto";
+
+option java_outer_classname = "Example3";
+
+message Photo {
+  int32  id     = 1;
+  string path   = 2;
+  repeated Label  labels = 3 [(set)    = true];
+  repeated Attr   attrs  = 4 [(map)    = true];
+  repeated Tag    tags   = 5 [(map_by) = "person_id"];
+  bytes  image  = 6;
+  Type   type   = 7;
+
+  enum Type {
+    JPEG = 0;
+    PNG = 1;
+    GIF = 2;
+  }
+
+  message Label {
+    string item   = 1;
+    bool   exists = 2;
+  }
+
+  message Attr {
+    string key = 1;
+    string val = 2;
+  }
+
+  message Tag {
+    int32 person_id = 1;
+    int32 x_coord   = 2 [(meta) = "{:max 100.0 :min -100.0}"];
+    int32 y_coord   = 3;
+    int32 width     = 4;
+    int32 height    = 5;
+  }
+}
