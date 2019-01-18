@@ -15,7 +15,7 @@
 * Release Notes
 * Donating
 
-## Aboout
+## About
 
 This project provides a Clojure interface to Google's
 [protocol buffers](http://code.google.com/p/protobuf). Protocol buffers can be
